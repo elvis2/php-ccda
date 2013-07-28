@@ -33,6 +33,7 @@ class Ccda {
 	
 	function construct_json() {
 		$patient = $this->demo;
+		$patient->provider = $this->provider;
 		$patient->rx = $this->rx;
 		$patient->dx = $this->dx;
 		$patient->lab = $this->lab;
@@ -40,7 +41,7 @@ class Ccda {
 		$patient->proc = $this->proc;
 		$patient->vital = $this->vital;
 		$patient->allergy = $this->allergy;
-		return json_encode($patient);
+		return json_encode($patient, JSON_PRETTY_PRINT);
 	}
 	
 	function load_xml($xmlObject) {
@@ -65,7 +66,7 @@ class Ccda {
 			}
 			// Allergies
 			else if ($test == '2.16.840.1.113883.10.20.22.2.6.1') {
-				$this->parse_allergies();
+				$this->parse_allergies($xmlRoot->component[$i]->section);
 			}
 			
 			// Encounters
@@ -179,8 +180,10 @@ class Ccda {
 	
 	private function parse_demo($xmlDemo) {
 		// Extract Demographics
-		$this->demo->addr->street 		= 		   $xmlDemo	->addr
-															->streetAddressLine;
+		$this->demo->addr->street 		= array(	(string)	$xmlDemo	->addr
+																			->streetAddressLine[0],
+													(string)	$xmlDemo	->addr
+																			->streetAddressLine[1]);					;
 		$this->demo->addr->city			= (string) $xmlDemo	->addr
 															->city;
 		$this->demo->addr->state 		= (string) $xmlDemo	->addr
@@ -201,7 +204,7 @@ class Ccda {
 		$this->demo->name->last 		= (string) $xmlDemo	->patient
 															->name
 															->family;
-		$this->demo->name->gender 		= (string) $xmlDemo	->patient
+		$this->demo->gender 			= (string) $xmlDemo	->patient
 															->administrativeGenderCode
 															->attributes()
 															->code;
@@ -234,9 +237,12 @@ class Ccda {
 																			->telecom
 																			->attributes()
 																			->value;
-		$this->provider->organization->addr->street 	= 			$xmlDemo->providerOrganization
+		$this->provider->organization->addr->street 	= 	array( (string)	$xmlDemo->providerOrganization
 																			->addr
-																			->streetAddressLine;
+																			->streetAddressLine[0],
+																   (string) $xmlDemo->providerOrganization
+																			->addr
+																			->streetAddressLine[1]);
 		$this->provider->organization->addr->city 		= (string) 	$xmlDemo->providerOrganization
 																			->addr
 																			->city;
@@ -253,7 +259,80 @@ class Ccda {
 		return true;
 	}
 	
-	private function parse_allergies() {
+	private function parse_allergies($xmlAllergy) {
+		foreach($xmlAllergy->entry as $entry) {
+			$n = count($this->allergy);
+			$this->allergy[$n]->date_range->start	=	(string) $entry	->act
+																		->effectiveTime
+																		->low
+																		->attributes()
+																		->value;
+			$this->allergy[$n]->date_range->end		=	(string) $entry	->act
+																		->effectiveTime
+																		->high
+																		->attributes()
+																		->value;
+			$this->allergy[$n]->name				=	(string) $entry	->act
+																		->entryRelationship
+																		->observation
+																		->code
+																		->attributes()
+																		->displayName;
+			$this->allergy[$n]->code				=	(string) $entry	->act
+																		->entryRelationship
+																		->observation
+																		->code
+																		->attributes()
+																		->code;
+			$this->allergy[$n]->code_system				=	(string) $entry	->act
+																		->entryRelationship
+																		->observation
+																		->code
+																		->attributes()
+																		->codeSystem;
+			$this->allergy[$n]->code_system_name	=	(string) $entry	->act
+																		->entryRelationship
+																		->observation
+																		->code
+																		->attributes()
+																		->codeSystemName;
+			$this->allergy[$n]->allergen->name		=	(string) $entry	->act
+																		->entryRelationship
+																		->observation
+																		->participant
+																		->participantRole
+																		->playingEntity
+																		->code
+																		->attributes()
+																		->displayName;
+			$this->allergy[$n]->allergen->code		=	(string) $entry	->act
+																		->entryRelationship
+																		->observation
+																		->participant
+																		->participantRole
+																		->playingEntity
+																		->code
+																		->attributes()
+																		->code;
+			$this->allergy[$n]->allergen->code_system		=	(string) $entry	->act
+																		->entryRelationship
+																		->observation
+																		->participant
+																		->participantRole
+																		->playingEntity
+																		->code
+																		->attributes()
+																		->codeSystem;
+			$this->allergy[$n]->allergen->code_system_name		=	(string) $entry	->act
+																		->entryRelationship
+																		->observation
+																		->participant
+																		->participantRole
+																		->playingEntity
+																		->code
+																		->attributes()
+																		->codeSystemName;	
+		}
 		return true;
 	}
 
