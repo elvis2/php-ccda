@@ -93,7 +93,7 @@ class Ccda {
 			// Procedures
 			else if ($test == '2.16.840.1.113883.10.20.22.2.7.1' or 
 					 $test == '2.16.840.1.113883.10.20.22.2.7') {
-				$this->parse_proc();
+				$this->parse_proc($xmlRoot->component[$i]->section);
 			}
 			
 			// Vitals
@@ -613,7 +613,70 @@ class Ccda {
 		return true;
 	}
 
-	private function parse_proc() {
+	private function parse_proc($xmlProc) {
+		foreach($xmlProc->entry as $entry) {
+			$n = count($this->proc);
+			
+			$this->proc[$n]->date		= (string) $entry	->procedure
+													->effectiveTime
+													->attributes()
+													->value;
+			$this->proc[$n]->name		= (string) $entry	->procedure
+													->code
+													->attributes()
+													->displayName;
+			$this->proc[$n]->code		= (string) $entry	->procedure
+													->code
+													->attributes()
+													->code;
+			$this->proc[$n]->code_system	= (string) $entry	->procedure
+													->code
+													->attributes()
+													->codeSystem;
+			$this->proc[$n]->performer->organization		= (string) $entry 	->procedure
+													->performer
+													->assignedEntity
+													->addr
+													->name;
+			$this->proc[$n]->performer->street		= array((string) $entry 	->procedure
+													->performer
+													->assignedEntity
+													->addr
+													->streetAddressLine[0],
+													(string) $entry 	->procedure
+													->performer
+													->assignedEntity
+													->addr
+													->streetAddressLine[1]);
+			$this->proc[$n]->performer->city	= (string) $entry 	->procedure
+													->performer
+													->assignedEntity
+													->addr
+													->city;
+			$this->proc[$n]->performer->state	= (string) $entry 	->procedure
+													->performer
+													->assignedEntity
+													->addr
+													->state;
+			$this->proc[$n]->performer->zip	= (string) $entry 	->procedure
+													->performer
+													->assignedEntity
+													->addr
+													->postalCode;
+			$this->proc[$n]->performer->country	= (string) $entry 	->procedure
+													->performer
+													->assignedEntity
+													->addr
+													->country;
+			$this->proc[$n]->performer->phone	= (string) $entry 	->procedure
+													->performer
+													->assignedEntity
+													->telecom
+													->attributes()
+													->value;	
+		}
+	
+	
 		return true;
 	}
 
