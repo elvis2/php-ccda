@@ -76,7 +76,7 @@ class Ccda {
 			// Immunizations
 			else if ($test == '2.16.840.1.113883.10.20.22.2.2.1' or 
 					 $test == '2.16.840.1.113883.10.20.22.2.2') {
-				$this->parse_immunizations();
+				$this->parse_immunizations($xmlRoot->component[$i]->section);
 			}
 			
 			// Labs
@@ -395,7 +395,78 @@ class Ccda {
 		return true;
 	}
 
-	private function parse_immunizations() {
+	private function parse_immunizations($xmlImm) {
+		foreach($xmlImm->entry as $entry) {
+			$n = count($this->immunization);
+			$entryRoot = $entry->substanceAdministration;
+			$this->immunization[$n]->date				= (string)	$entryRoot	->effectiveTime
+																		->attributes()
+																		->value;
+			$this->immunization[$n]->product->name		= (string)	$entryRoot	->consumable
+																		->manufacturedProduct
+																		->manufacturedMaterial
+																		->code
+																		->attributes()
+																		->displayName;
+			$this->immunization[$n]->product->code		= (string)	$entryRoot	->consumable
+																		->manufacturedProduct
+																		->manufacturedMaterial
+																		->code
+																		->attributes()
+																		->code;
+			$this->immunization[$n]->product->code_system	= (string)	$entryRoot	->consumable
+																		->manufacturedProduct
+																		->manufacturedMaterial
+																		->code
+																		->attributes()
+																		->codeSystem;
+			$this->immunization[$n]->product->code_system_name		= (string)	$entryRoot	->consumable
+																		->manufacturedProduct
+																		->manufacturedMaterial
+																		->code
+																		->attributes()
+																		->codeSystemName;
+			$this->immunization[$n]->product->translation->name		= (string)	$entryRoot	->consumable
+																		->manufacturedProduct
+																		->manufacturedMaterial
+																		->code
+																		->translation
+																		->attributes()
+																		->displayName;
+			$this->immunization[$n]->product->translation->code		= (string)	$entryRoot	->consumable
+																		->manufacturedProduct
+																		->manufacturedMaterial
+																		->code
+																		->translation
+																		->attributes()
+																		->code;
+			$this->immunization[$n]->product->translation->code_system		= (string)	$entryRoot	->consumable
+																		->manufacturedProduct
+																		->manufacturedMaterial
+																		->code
+																		->translation
+																		->attributes()
+																		->codeSystem;
+			$this->immunization[$n]->product->translation->code_system_name		= (string)	$entryRoot	->consumable
+																		->manufacturedProduct
+																		->manufacturedMaterial
+																		->code
+																		->translation
+																		->attributes()
+																		->codeSystemName;
+			$this->immunization[$n]->route->name		= (string)	$entryRoot	->routeCode
+																		->attributes()
+																		->displayName;
+			$this->immunization[$n]->route->code		= (string)	$entryRoot	->routeCode
+																		->attributes()
+																		->code;
+			$this->immunization[$n]->route->code_system	= (string)	$entryRoot	->routeCode
+																		->attributes()
+																		->codeSystem;
+			$this->immunization[$n]->route->code_system_name	= (string)	$entryRoot	->routeCode
+																		->attributes()
+																		->codeSystemName;	
+		}
 		return true;
 	}
 
