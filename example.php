@@ -5,18 +5,16 @@ require('php-ccda.php');
 
 // Load file with example CCDA.
 // Note: loading this into a string, as the ccda model will translate this to
-// an XML object
-$xml = file_get_contents('demo.xml');
+// an XML object.  It will also take an XML object
+$xml = file_get_contents('demo3.xml');
 
 // Create new patient
 $patient = new Ccda($xml);
 
-// If it's already in a simple XML object, you can pass that via the following:
-//$patient = new Ccda();
-//$patient->load_xml($xmlObject);
-
 // Construct and echo JSON 
+echo('<PRE>');
 echo($patient->construct_json());
+echo('</PRE>');
 
 // Or you can call element of the CCDA directly, and get back a PHP object
 //print_r($patient->rx);
