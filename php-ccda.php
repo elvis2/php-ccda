@@ -1,0 +1,281 @@
+<?php
+////////////////////////////////////////////////////////////////////////////////
+// 
+// php-ccda
+// John Schrom
+// http://john.mn
+// 
+// Objective: Parse a CCDA XML string into discrete health data elements.
+//
+
+////////////////////////////////////////////////////////////////////////////////
+
+
+class Ccda {
+
+	function __construct($string = '') {
+
+		// Initialize variables
+		$this->xml = false;
+		$this->rx = array();
+		$this->dx = array();
+		$this->lab = array();
+		$this->immunization = array();
+		$this->proc = array();
+		$this->vital = array();
+		$this->allergy = array();
+
+		// If data was passed with constructor, parse it.
+		if ($string != '') {
+			$this->load_xml(simplexml_load_string($string));		
+		}
+	}
+	
+	function construct_json() {
+		$patient = $this->demo;
+		$patient->rx = $this->rx;
+		$patient->dx = $this->dx;
+		$patient->lab = $this->lab;
+		$patient->immunizaiton = $this->immunization;
+		$patient->proc = $this->proc;
+		$patient->vital = $this->vital;
+		$patient->allergy = $this->allergy;
+		return json_encode($patient);
+	}
+	
+	function load_xml($xmlObject) {
+		$this->xml = $xmlObject;
+		$this->parse();
+		return true;
+	}
+	
+	private function parse() {
+		// Parse demographics
+		$this->parse_demo($this->xml->recordTarget->patientRole);
+		
+		// Parse components
+		$xmlRoot = $this->xml->component->structuredBody;
+		$i = 0;
+		while(is_object($xmlRoot->component[$i])) {
+			$test = $xmlRoot->component[$i]->section->templateId->attributes()->root;
+			
+			// Medications
+			if ($test == '2.16.840.1.113883.10.20.22.2.1.1'){
+				$this->parse_meds($xmlRoot->component[$i]->section);
+			}
+			// Allergies
+			else if ($test == '2.16.840.1.113883.10.20.22.2.6.1') {
+				$this->parse_allergies();
+			}
+			
+			// Encounters
+			//else if ($test == '2.16.840.1.113883.10.20.22.2.22')
+			//}
+			
+			// Immunizations
+			else if ($test == '2.16.840.1.113883.10.20.22.2.2.1' or 
+					 $test == '2.16.840.1.113883.10.20.22.2.2') {
+				$this->parse_immunizations();
+			}
+			
+			// Labs
+			else if ($test == '2.16.840.1.113883.10.20.22.2.3.1') {
+				$this->parse_labs();
+			}
+
+			// Problems
+			else if ($test == '2.16.840.1.113883.10.20.22.2.5.1' or 
+					 $test == '2.16.840.1.113883.10.20.22.2.5') {
+				$this->parse_dx();
+			}
+
+			// Procedures
+			else if ($test == '2.16.840.1.113883.10.20.22.2.7.1' or 
+					 $test == '2.16.840.1.113883.10.20.22.2.7') {
+				$this->parse_proc();
+			}
+			
+			// Vitals
+			if ($test == '2.16.840.1.113883.10.20.22.2.4.1') {
+				$this->parse_vitals();
+			}
+			$i++;
+		}
+		
+		return true;
+	}
+	
+	private function parse_meds($xmlMed) {
+		foreach($xmlMed->entry as $entry) {
+			$n = count($this->rx);
+			$this->rx[$n]->date_range->start = (string) $entry			->substanceAdministration
+																		->effectiveTime
+																		->low
+																		->attributes()
+																		->value;
+			$this->rx[$n]->date_range->end = (string) $entry			->substanceAdministration
+																		->effectiveTime
+																		->high
+																		->attributes()
+																		->value;
+			$this->rx[$n]->product_name = (string) $entry				->substanceAdministration
+																		->consumable
+																		->manufacturedProduct
+																		->manufacturedMaterial
+																		->code
+																		->attributes()
+																		->displayName;
+			$this->rx[$n]->product_code = (string) $entry				->substanceAdministration
+																		->consumable
+																		->manufacturedProduct
+																		->manufacturedMaterial
+																		->code
+																		->attributes()
+																		->code;										
+			$this->rx[$n]->product_code_system = (string) $entry		->substanceAdministration
+																		->consumable
+																		->manufacturedProduct
+																		->manufacturedMaterial
+																		->code
+																		->attributes()
+																		->codeSystem;
+			$this->rx[$n]->translation->name = (string) $entry			->substanceAdministration
+																		->consumable
+																		->manufacturedProduct
+																		->manufacturedMaterial
+																		->code
+																		->translation
+																		->attributes()
+																		->displayName;
+
+			$this->rx[$n]->translation->code_system = (string) $entry	->substanceAdministration
+																		->consumable
+																		->manufacturedProduct
+																		->manufacturedMaterial
+																		->code
+																		->translation
+																		->attributes()
+																		->codeSystemName;
+
+			$this->rx[$n]->translation->code = (string) $entry			->substanceAdministration
+																		->consumable
+																		->manufacturedProduct
+																		->manufacturedMaterial
+																		->code
+																		->translation
+																		->attributes()
+																		->code;			
+			$this->rx[$n]->dose_quantity->value = (string) $entry		->substanceAdministration
+																		->doseQuantity
+																		->attributes()
+																		->value;
+			$this->rx[$n]->dose_quantity->unit = (string) $entry		->substanceAdministration
+																		->doseQuantity
+																		->attributes()
+																		->unit;
+		}
+		return true;
+	}
+	
+	private function parse_demo($xmlDemo) {
+		// Extract Demographics
+		$this->demo->addr->street 		= 		   $xmlDemo	->addr
+															->streetAddressLine;
+		$this->demo->addr->city			= (string) $xmlDemo	->addr
+															->city;
+		$this->demo->addr->state 		= (string) $xmlDemo	->addr
+															->state;
+		$this->demo->addr->postalCode 	= (string) $xmlDemo	->addr
+															->postalCode;
+		$this->demo->addr->country 		= (string) $xmlDemo	->addr
+															->country;
+		$this->demo->phone->number 		= (string) $xmlDemo	->telecom
+															->attributes()
+															->value;
+		$this->demo->phone->use 		= (string) $xmlDemo	->telecom
+															->attributes()
+															->use;
+		$this->demo->name->first 		= (string) $xmlDemo	->patient
+															->name
+															->given;
+		$this->demo->name->last 		= (string) $xmlDemo	->patient
+															->name
+															->family;
+		$this->demo->name->gender 		= (string) $xmlDemo	->patient
+															->administrativeGenderCode
+															->attributes()
+															->code;
+		$this->demo->birthdate 			= (string) $xmlDemo	->patient
+															->birthTime
+															->attributes()
+															->value[0];
+		$this->demo->maritalStatus 		= (string) $xmlDemo	->patient
+															->maritalStatusCode
+															->attributes()
+															->displayName;
+		$this->demo->race 				= (string) $xmlDemo	->patient
+															->raceCode
+															->attributes()
+															->displayName;
+		$this->demo->ethnicity 			= (string) $xmlDemo	->patient
+															->ethnicGroupCode
+															->attributes()
+															->displayName;
+		$this->demo->language 			= (string) $xmlDemo	->patient
+															->languageCommunication
+															->languageCode
+															->attributes()
+															->code;
+		
+		// Extract provider info
+		$this->provider->organization->name 			= (string) 	$xmlDemo->providerOrganization
+																			->name;
+		$this->provider->organization->phone 			= (string) 	$xmlDemo->providerOrganization
+																			->telecom
+																			->attributes()
+																			->value;
+		$this->provider->organization->addr->street 	= 			$xmlDemo->providerOrganization
+																			->addr
+																			->streetAddressLine;
+		$this->provider->organization->addr->city 		= (string) 	$xmlDemo->providerOrganization
+																			->addr
+																			->city;
+		$this->provider->organization->addr->state 		= (string) 	$xmlDemo->providerOrganization
+																			->addr
+																			->state;
+		$this->provider->organization->addr->postalCode = (string) 	$xmlDemo->providerOrganization
+																			->addr
+																			->postalCode;
+		$this->provider->organization->addr->country 	= (string) 	$xmlDemo->providerOrganization
+																			->addr
+																			->country;
+		
+		return true;
+	}
+	
+	private function parse_allergies() {
+		return true;
+	}
+
+	private function parse_immunizations() {
+		return true;
+	}
+
+	private function parse_labs() {
+		return true;
+	}
+
+	private function parse_dx() {
+		return true;
+	}
+
+	private function parse_proc() {
+		return true;
+	}
+
+	private function parse_vitals() {
+		return true;
+	}
+}
+
+?>
