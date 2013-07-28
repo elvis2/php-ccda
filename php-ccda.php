@@ -86,7 +86,7 @@ class Ccda {
 			// Problems
 			else if ($test == '2.16.840.1.113883.10.20.22.2.5.1' or 
 					 $test == '2.16.840.1.113883.10.20.22.2.5') {
-				$this->parse_dx();
+				$this->parse_dx($xmlRoot->component[$i]->section);
 			}
 
 			// Procedures
@@ -333,7 +333,74 @@ class Ccda {
 		return true;
 	}
 
-	private function parse_dx() {
+	private function parse_dx($xmlDx) {
+		foreach($xmlDx->entry as $entry) {
+			$n = count($this->dx);
+			$this->dx[$n]->date_range->start = (string) $entry	->act
+																->effectiveTime
+																->low
+																->attributes()
+																->value;
+			$this->dx[$n]->date_range->end = (string) $entry	->act
+																->effectiveTime
+																->high
+																->attributes()
+																->value;
+			$this->dx[$n]->name = (string) $entry				->act
+																->entryRelationship
+																->observation
+																->value
+																->attributes()
+																->displayName;
+			$this->dx[$n]->code = (string) $entry				->act
+																->entryRelationship
+																->observation
+																->value
+																->attributes()
+																->code;
+			$this->dx[$n]->code_system = (string) $entry		->act
+																->entryRelationship
+																->observation
+																->value
+																->attributes()
+																->codeSystem;
+			$this->dx[$n]->translation->name = (string) $entry	->act
+																->entryRelationship
+																->observation
+																->value
+																->translation
+																->attributes()
+																->displayName;
+			$this->dx[$n]->translation->code = (string) $entry	->act
+																->entryRelationship
+																->observation
+																->value
+																->translation
+																->attributes()
+																->code;
+			$this->dx[$n]->translation->code_system = (string) $entry	->act
+																->entryRelationship
+																->observation
+																->value
+																->translation
+																->attributes()
+																->codeSystem;
+			$this->dx[$n]->translation->code_system_name = (string) $entry	->act
+																->entryRelationship
+																->observation
+																->value
+																->translation
+																->attributes()
+																->codeSystemName;
+			$this->dx[$n]->status = (string) $entry				->act
+																->entryRelationship
+																->observation
+																->entryRelationship
+																->observation
+																->value
+																->attributes()
+																->displayName;		
+		}
 		return true;
 	}
 
