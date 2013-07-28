@@ -116,289 +116,379 @@ class Ccda {
 	private function parse_meds($xmlMed) {
 		foreach($xmlMed->entry as $entry) {
 			$n = count($this->rx);
-			$this->rx[$n]->date_range->start = (string) $entry			->substanceAdministration
-																		->effectiveTime
-																		->low
-																		->attributes()
-																		->value;
-			$this->rx[$n]->date_range->end = (string) $entry			->substanceAdministration
-																		->effectiveTime
-																		->high
-																		->attributes()
-																		->value;
-			$this->rx[$n]->product_name = (string) $entry				->substanceAdministration
-																		->consumable
-																		->manufacturedProduct
-																		->manufacturedMaterial
-																		->code
-																		->attributes()
-																		->displayName;
-			$this->rx[$n]->product_code = (string) $entry				->substanceAdministration
-																		->consumable
-																		->manufacturedProduct
-																		->manufacturedMaterial
-																		->code
-																		->attributes()
-																		->code;										
-			$this->rx[$n]->product_code_system = (string) $entry		->substanceAdministration
-																		->consumable
-																		->manufacturedProduct
-																		->manufacturedMaterial
-																		->code
-																		->attributes()
-																		->codeSystem;
-			$this->rx[$n]->translation->name = (string) $entry			->substanceAdministration
-																		->consumable
-																		->manufacturedProduct
-																		->manufacturedMaterial
-																		->code
-																		->translation
-																		->attributes()
-																		->displayName;
+			$this	->rx[$n]
+					  ->date_range
+            ->start 	    	= (string) $entry	->substanceAdministration
+													    	              ->effectiveTime
+                                              ->low
+                                              ->attributes()
+                                              ->value;
+			$this ->rx[$n]
+			      ->date_range
+			      ->end          = (string) $entry	->substanceAdministration
+																    		      ->effectiveTime
+                                              ->high
+                                              ->attributes()
+                                              ->value;
+			$this ->rx[$n]
+			      ->product_name = (string) $entry	->substanceAdministration
+													          					->consumable
+                                              ->manufacturedProduct
+                                              ->manufacturedMaterial
+                                              ->code
+                                              ->attributes()
+                                              ->displayName;
+			$this ->rx[$n]
+			      ->product_code = (string) $entry	->substanceAdministration
+																	          	->consumable
+                                              ->manufacturedProduct
+                                              ->manufacturedMaterial
+                                              ->code
+                                              ->attributes()
+                                              ->code;										
+			$this ->rx[$n]
+			      ->product_code_system = (string) $entry ->substanceAdministration
+													                					->consumable
+                                                    ->manufacturedProduct
+                                                    ->manufacturedMaterial
+                                                    ->code
+                                                    ->attributes()
+                                                    ->codeSystem;
+			$this ->rx[$n]
+            ->translation
+            ->name          = (string) $entry	->substanceAdministration
+														          				->consumable
+                                              ->manufacturedProduct
+                                              ->manufacturedMaterial
+                                              ->code
+                                              ->translation
+                                              ->attributes()
+                                              ->displayName;
 
-			$this->rx[$n]->translation->code_system = (string) $entry	->substanceAdministration
-																		->consumable
-																		->manufacturedProduct
-																		->manufacturedMaterial
-																		->code
-																		->translation
-																		->attributes()
-																		->codeSystemName;
+			$this ->rx[$n]
+			      ->translation
+			      ->code_system   = (string) $entry	->substanceAdministration
+																	          	->consumable
+                                              ->manufacturedProduct
+                                              ->manufacturedMaterial
+                                              ->code
+                                              ->translation
+                                              ->attributes()
+                                              ->codeSystemName;
 
-			$this->rx[$n]->translation->code = (string) $entry			->substanceAdministration
-																		->consumable
-																		->manufacturedProduct
-																		->manufacturedMaterial
-																		->code
-																		->translation
-																		->attributes()
-																		->code;			
-			$this->rx[$n]->dose_quantity->value = (string) $entry		->substanceAdministration
-																		->doseQuantity
-																		->attributes()
-																		->value;
-			$this->rx[$n]->dose_quantity->unit = (string) $entry		->substanceAdministration
-																		->doseQuantity
-																		->attributes()
-																		->unit;
+			$this ->rx[$n]
+			      ->translation
+			      ->code          = (string) $entry	->substanceAdministration
+										          								->consumable
+                                              ->manufacturedProduct
+                                              ->manufacturedMaterial
+                                              ->code
+                                              ->translation
+                                              ->attributes()
+                                              ->code;			
+			$this ->rx[$n]
+			      ->dose_quantity
+			      ->value         = (string) $entry	->substanceAdministration
+												          						->doseQuantity
+                                              ->attributes()
+                                              ->value;
+			$this ->rx[$n]
+			      ->dose_quantity
+			      ->unit          = (string) $entry	->substanceAdministration
+													          					->doseQuantity
+                                              ->attributes()
+                                              ->unit;
 		}
 		return true;
 	}
 	
 	private function parse_demo($xmlDemo) {
 		// Extract Demographics
-		$this->demo->addr->street 		= array(	(string)	$xmlDemo	->addr
-																			->streetAddressLine[0],
-													(string)	$xmlDemo	->addr
-																			->streetAddressLine[1]);					;
-		$this->demo->addr->city			= (string) $xmlDemo	->addr
-															->city;
-		$this->demo->addr->state 		= (string) $xmlDemo	->addr
-															->state;
-		$this->demo->addr->postalCode 	= (string) $xmlDemo	->addr
-															->postalCode;
-		$this->demo->addr->country 		= (string) $xmlDemo	->addr
-															->country;
-		$this->demo->phone->number 		= (string) $xmlDemo	->telecom
-															->attributes()
-															->value;
-		$this->demo->phone->use 		= (string) $xmlDemo	->telecom
-															->attributes()
-															->use;
-		$this->demo->name->first 		= (string) $xmlDemo	->patient
-															->name
-															->given;
-		$this->demo->name->last 		= (string) $xmlDemo	->patient
-															->name
-															->family;
-		$this->demo->gender 			= (string) $xmlDemo	->patient
-															->administrativeGenderCode
-															->attributes()
-															->code;
-		$this->demo->birthdate 			= (string) $xmlDemo	->patient
-															->birthTime
-															->attributes()
-															->value[0];
-		$this->demo->maritalStatus 		= (string) $xmlDemo	->patient
-															->maritalStatusCode
-															->attributes()
-															->displayName;
-		$this->demo->race 				= (string) $xmlDemo	->patient
-															->raceCode
-															->attributes()
-															->displayName;
-		$this->demo->ethnicity 			= (string) $xmlDemo	->patient
-															->ethnicGroupCode
-															->attributes()
-															->displayName;
-		$this->demo->language 			= (string) $xmlDemo	->patient
-															->languageCommunication
-															->languageCode
-															->attributes()
-															->code;
+		$this ->demo
+		      ->addr
+		      ->street 		     = array(	
+		                        (string)	$xmlDemo	->addr
+																			          ->streetAddressLine[0],
+                            (string)	$xmlDemo	->addr
+																		            ->streetAddressLine[1]);
+		$this ->demo
+		      ->addr
+		      ->city			    = (string) $xmlDemo	->addr
+															                ->city;
+		$this ->demo
+		      ->addr
+		      ->state 		    = (string) $xmlDemo	->addr
+														                	->state;
+		$this ->demo
+		      ->addr
+		      ->postalCode 	  = (string) $xmlDemo	->addr
+															                ->postalCode;
+		$this ->demo
+		      ->addr
+		      ->country 		  = (string) $xmlDemo	->addr
+															                ->country;
+		$this ->demo
+		      ->phone
+		      ->number 		    = (string) $xmlDemo	->telecom
+														                	->attributes()
+                                              ->value;
+		$this ->demo
+		      ->phone
+		      ->use 		      = (string) $xmlDemo	->telecom
+														                	->attributes()
+                                              ->use;
+		$this ->demo
+		      ->name
+		      ->first 		    = (string) $xmlDemo	->patient
+														                	->name
+                                              ->given;
+		$this ->demo
+		      ->name
+		      ->last 		      = (string) $xmlDemo	->patient
+													                		->name
+                                              ->family;
+		$this ->demo
+		      ->gender 			  = (string) $xmlDemo	->patient
+													                  	->administrativeGenderCode
+                                              ->attributes()
+                                              ->code;
+		$this ->demo
+		      ->birthdate 		= (string) $xmlDemo	->patient
+														                	->birthTime
+                                              ->attributes()
+                                              ->value[0];
+		$this ->demo
+		      ->maritalStatus = (string) $xmlDemo	->patient
+											                 				->maritalStatusCode
+                                              ->attributes()
+                                              ->displayName;
+		$this ->demo
+		      ->race 			   	= (string) $xmlDemo	->patient
+													                		->raceCode
+                                              ->attributes()
+                                              ->displayName;
+		$this ->demo
+		      ->ethnicity 		= (string) $xmlDemo	->patient
+													                		->ethnicGroupCode
+                                              ->attributes()
+                                              ->displayName;
+		$this ->demo
+		      ->language 			= (string) $xmlDemo	->patient
+													                		->languageCommunication
+                                              ->languageCode
+                                              ->attributes()
+                                              ->code;
 		
 		// Extract provider info
-		$this->provider->organization->name 			= (string) 	$xmlDemo->providerOrganization
-																			->name;
-		$this->provider->organization->phone 			= (string) 	$xmlDemo->providerOrganization
-																			->telecom
-																			->attributes()
-																			->value;
-		$this->provider->organization->addr->street 	= 	array( (string)	$xmlDemo->providerOrganization
-																			->addr
-																			->streetAddressLine[0],
-																   (string) $xmlDemo->providerOrganization
-																			->addr
-																			->streetAddressLine[1]);
-		$this->provider->organization->addr->city 		= (string) 	$xmlDemo->providerOrganization
-																			->addr
-																			->city;
-		$this->provider->organization->addr->state 		= (string) 	$xmlDemo->providerOrganization
-																			->addr
-																			->state;
-		$this->provider->organization->addr->postalCode = (string) 	$xmlDemo->providerOrganization
-																			->addr
-																			->postalCode;
-		$this->provider->organization->addr->country 	= (string) 	$xmlDemo->providerOrganization
-																			->addr
-																			->country;
-		
+		$this ->provider
+		      ->organization
+		      ->name 			     = (string) $xmlDemo  ->providerOrganization
+																		            ->name;
+		$this ->provider
+		      ->organization
+		      ->phone 			   = (string) $xmlDemo  ->providerOrganization
+																		          	->telecom
+                                                ->attributes()
+                                                ->value;
+		$this ->provider
+		      ->organization
+		      ->addr
+		      ->street 	       = 	array(
+		                          (string) $xmlDemo ->providerOrganization
+																		            ->addr
+                                                ->streetAddressLine[0],
+                              (string) $xmlDemo ->providerOrganization
+																	          		->addr
+                                                ->streetAddressLine[1]);
+		$this ->provider
+		      ->organization
+		      ->addr
+		      ->city 		       = (string) $xmlDemo  ->providerOrganization
+																	          	  ->addr
+                                                ->city;
+		$this ->provider
+		      ->organization
+		      ->addr
+		      ->state 		     = (string) $xmlDemo  ->providerOrganization
+																			          ->addr
+                                                ->state;
+		$this ->provider
+		      ->organization
+		      ->addr
+		      ->postalCode     = (string) $xmlDemo  ->providerOrganization
+																		          	->addr
+                                                ->postalCode;
+		$this ->provider
+		      ->organization
+		      ->addr
+		      ->country 	     = (string) $xmlDemo  ->providerOrganization
+																	          		->addr
+                                                ->country;
 		return true;
 	}
 	
 	private function parse_allergies($xmlAllergy) {
 		foreach($xmlAllergy->entry as $entry) {
 			$n = count($this->allergy);
-			$this->allergy[$n]->date_range->start	=	(string) $entry	->act
-																		->effectiveTime
-																		->low
-																		->attributes()
-																		->value;
-			$this->allergy[$n]->date_range->end		=	(string) $entry	->act
-																		->effectiveTime
-																		->high
-																		->attributes()
-																		->value;
-			$this->allergy[$n]->name				=	(string) $entry	->act
-																		->entryRelationship
-																		->observation
-																		->code
-																		->attributes()
-																		->displayName;
-			$this->allergy[$n]->code				=	(string) $entry	->act
-																		->entryRelationship
-																		->observation
-																		->code
-																		->attributes()
-																		->code;
-			$this->allergy[$n]->code_system				=	(string) $entry	->act
-																		->entryRelationship
-																		->observation
-																		->code
-																		->attributes()
-																		->codeSystem;
-			$this->allergy[$n]->code_system_name	=	(string) $entry	->act
-																		->entryRelationship
-																		->observation
-																		->code
-																		->attributes()
-																		->codeSystemName;
-			$this->allergy[$n]->allergen->name		=	(string) $entry	->act
-																		->entryRelationship
-																		->observation
-																		->participant
-																		->participantRole
-																		->playingEntity
-																		->code
-																		->attributes()
-																		->displayName;
-			$this->allergy[$n]->allergen->code		=	(string) $entry	->act
-																		->entryRelationship
-																		->observation
-																		->participant
-																		->participantRole
-																		->playingEntity
-																		->code
-																		->attributes()
-																		->code;
-			$this->allergy[$n]->allergen->code_system		=	(string) $entry	->act
-																		->entryRelationship
-																		->observation
-																		->participant
-																		->participantRole
-																		->playingEntity
-																		->code
-																		->attributes()
-																		->codeSystem;
-			$this->allergy[$n]->allergen->code_system_name		=	(string) $entry	->act
-																		->entryRelationship
-																		->observation
-																		->participant
-																		->participantRole
-																		->playingEntity
-																		->code
-																		->attributes()
-																		->codeSystemName;
-			$this->allergy[$n]->reaction_type->name 		= (string) $entry 	->act
-																				->entryRelationship
-																				->observation
-																				->value
-																				->attributes()
-																				->displayName;
-			$this->allergy[$n]->reaction_type->code 		= (string) $entry 	->act
-																				->entryRelationship
-																				->observation
-																				->value
-																				->attributes()
-																				->code;
-			$this->allergy[$n]->reaction_type->code_system 		= (string) $entry 	->act
-																				->entryRelationship
-																				->observation
-																				->value
-																				->attributes()
-																				->codeSystem;
-			$this->allergy[$n]->reaction_type->code_system_name 		= (string) $entry 	->act
-																				->entryRelationship
-																				->observation
-																				->value
-																				->attributes()
-																				->codeSystemName;
-			foreach($entry->act->entryRelationship->observation->entryRelationship as $detail) {
-				$test = $detail->observation->templateId->attributes()->root;
+			$this ->allergy[$n]
+			      ->date_range
+			      ->start	       =	(string) $entry	->act
+																	          	->effectiveTime
+                                              ->low
+                                              ->attributes()
+                                              ->value;
+			$this ->allergy[$n]
+			      ->date_range
+			      ->end		       =	(string) $entry	->act
+												          						->effectiveTime
+                                              ->high
+                                              ->attributes()
+                                              ->value;
+			$this ->allergy[$n]
+			      ->name				=	(string) $entry	->act
+															        			->entryRelationship
+                                            ->observation
+                                            ->code
+                                            ->attributes()
+                                            ->displayName;
+			$this ->allergy[$n]
+			      ->code				=	(string) $entry	->act
+																        		->entryRelationship
+                                            ->observation
+                                            ->code
+                                            ->attributes()
+                                            ->code;
+			$this ->allergy[$n]
+			      ->code_system	=	(string) $entry	->act
+										        								->entryRelationship
+                                            ->observation
+                                            ->code
+                                            ->attributes()
+                                            ->codeSystem;
+			$this ->allergy[$n]
+			      ->code_system_name	=	(string) $entry	->act
+																              		->entryRelationship
+                                                  ->observation
+                                                  ->code
+                                                  ->attributes()
+                                                  ->codeSystemName;
+			$this ->allergy[$n]
+			      ->allergen
+            ->name		    =	(string) $entry	->act
+														        				->entryRelationship
+                                            ->observation
+                                            ->participant
+                                            ->participantRole
+                                            ->playingEntity
+                                            ->code
+                                            ->attributes()
+                                            ->displayName;
+			$this ->allergy[$n]
+			      ->allergen
+            ->code		    =	(string) $entry	->act
+											        							->entryRelationship
+                                            ->observation
+                                            ->participant
+                                            ->participantRole
+                                            ->playingEntity
+                                            ->code
+                                            ->attributes()
+                                            ->code;
+			$this ->allergy[$n]
+			      ->allergen
+			      ->code_system		=	(string) $entry	->act
+														          				->entryRelationship
+                                              ->observation
+                                              ->participant
+                                              ->participantRole
+                                              ->playingEntity
+                                              ->code
+                                              ->attributes()
+                                              ->codeSystem;
+			$this ->allergy[$n]
+			      ->allergen
+			      ->code_system_name		=	(string) $entry	->act
+																                		->entryRelationship
+                                                    ->observation
+                                                    ->participant
+                                                    ->participantRole
+                                                    ->playingEntity
+                                                    ->code
+                                                    ->attributes()
+                                                    ->codeSystemName;
+			$this ->allergy[$n]
+			      ->reaction_type
+			      ->name 		         = (string) $entry 	->act
+												          								->entryRelationship
+                                                  ->observation
+                                                  ->value
+                                                  ->attributes()
+                                                  ->displayName;
+			$this ->allergy[$n]
+			      ->reaction_type
+			      ->code 		         = (string) $entry 	->act
+														          						->entryRelationship
+                                                  ->observation
+                                                  ->value
+                                                  ->attributes()
+                                                  ->code;
+			$this ->allergy[$n]
+			      ->reaction_type
+			      ->code_system 		= (string) $entry 	->act
+															          					->entryRelationship
+                                                  ->observation
+                                                  ->value
+                                                  ->attributes()
+                                                  ->codeSystem;
+			$this ->allergy[$n]
+			      ->reaction_type
+			      ->code_system_name 	= (string) $entry 	->act
+																	            			->entryRelationship
+                                                    ->observation
+                                                    ->value
+                                                    ->attributes()
+                                                    ->codeSystemName;
 
-				// Reaction Type
+      $entryRoot = $entry->act->entryRelationship->observation;
+			foreach($entryRoot->entryRelationship as $detail) {
+				$test = $detail->observation->templateId->attributes()->root;
+        $varname = '';
+
 				if ($test == '2.16.840.1.113883.10.20.22.4.9') {
-					$this->allergy[$n]->reaction->name		= (string) $detail	->observation
-																				->value
-																				->attributes()
-																				->displayName;
-					$this->allergy[$n]->reaction->code		= (string) $detail	->observation
-																				->value
-																				->attributes()
-																				->code;
-					$this->allergy[$n]->reaction->code_system	= (string) $detail	->observation
-																				->value
-																				->attributes()
-																				->codeSystem;
-				}
-				
-				// Severity
+				  $varname = 'reaction';
+				  }
 				if ($test == '2.16.840.1.113883.10.20.22.4.8') {
-					$this->allergy[$n]->severity->name 		= (string) $detail 	->observation
-																				->value
-																				->attributes()
-																				->displayName;
-					$this->allergy[$n]->severity->code 		= (string) $detail 	->observation
-																				->value
-																				->attributes()
-																				->code;
-					$this->allergy[$n]->severity->code_system 	= (string) $detail 	->observation
-																				->value
-																				->attributes()
-																				->codeSystem;
-				}
-			}
-		}
+				  $varname = 'severity';
+				  }
+				
+				if ($varname != '') {
+				  $this ->allergy[$n]
+					      ->{$varname}
+					      ->name		    = (string) $detail	->observation
+																		              ->value
+                                                  ->attributes()
+                                                  ->displayName;
+				  $this ->allergy[$n]
+					      ->{$varname}
+					      ->code		    = (string) $detail	->observation
+																		              ->value
+                                                  ->attributes()
+                                                  ->code;
+				  $this ->allergy[$n]
+					      ->{$varname}
+					      ->code_system	= (string) $detail	->observation
+																		              ->value
+                                                  ->attributes()
+                                                  ->codeSystem;
+				  $this ->allergy[$n]
+					      ->{$varname}
+					      ->code_system_name	= (string) $detail	->observation
+																		                    ->value
+                                                        ->attributes()
+                                                        ->codeSystemName;
+          }
+        }
+      }
 		return true;
 	}
 
@@ -406,73 +496,102 @@ class Ccda {
 		foreach($xmlImm->entry as $entry) {
 			$n = count($this->immunization);
 			$entryRoot = $entry->substanceAdministration;
-			$this->immunization[$n]->date				= (string)	$entryRoot	->effectiveTime
-																		->attributes()
-																		->value;
-			$this->immunization[$n]->product->name		= (string)	$entryRoot	->consumable
-																		->manufacturedProduct
-																		->manufacturedMaterial
-																		->code
-																		->attributes()
-																		->displayName;
-			$this->immunization[$n]->product->code		= (string)	$entryRoot	->consumable
-																		->manufacturedProduct
-																		->manufacturedMaterial
-																		->code
-																		->attributes()
-																		->code;
-			$this->immunization[$n]->product->code_system	= (string)	$entryRoot	->consumable
-																		->manufacturedProduct
-																		->manufacturedMaterial
-																		->code
-																		->attributes()
-																		->codeSystem;
-			$this->immunization[$n]->product->code_system_name		= (string)	$entryRoot	->consumable
-																		->manufacturedProduct
-																		->manufacturedMaterial
-																		->code
-																		->attributes()
-																		->codeSystemName;
-			$this->immunization[$n]->product->translation->name		= (string)	$entryRoot	->consumable
-																		->manufacturedProduct
-																		->manufacturedMaterial
-																		->code
-																		->translation
-																		->attributes()
-																		->displayName;
-			$this->immunization[$n]->product->translation->code		= (string)	$entryRoot	->consumable
-																		->manufacturedProduct
-																		->manufacturedMaterial
-																		->code
-																		->translation
-																		->attributes()
-																		->code;
-			$this->immunization[$n]->product->translation->code_system		= (string)	$entryRoot	->consumable
-																		->manufacturedProduct
-																		->manufacturedMaterial
-																		->code
-																		->translation
-																		->attributes()
-																		->codeSystem;
-			$this->immunization[$n]->product->translation->code_system_name		= (string)	$entryRoot	->consumable
-																		->manufacturedProduct
-																		->manufacturedMaterial
-																		->code
-																		->translation
-																		->attributes()
-																		->codeSystemName;
-			$this->immunization[$n]->route->name		= (string)	$entryRoot	->routeCode
-																		->attributes()
-																		->displayName;
-			$this->immunization[$n]->route->code		= (string)	$entryRoot	->routeCode
-																		->attributes()
-																		->code;
-			$this->immunization[$n]->route->code_system	= (string)	$entryRoot	->routeCode
-																		->attributes()
-																		->codeSystem;
-			$this->immunization[$n]->route->code_system_name	= (string)	$entryRoot	->routeCode
-																		->attributes()
-																		->codeSystemName;	
+			$this ->immunization[$n]
+			      ->date			      	= (string)	$entryRoot	->effectiveTime
+																                    		->attributes()
+                                                        ->value;
+			$this ->immunization[$n]
+			      ->product
+            ->name		          = (string)	$entryRoot	->consumable
+												                    						->manufacturedProduct
+                                                        ->manufacturedMaterial
+                                                        ->code
+                                                        ->attributes()
+                                                        ->displayName;
+			$this ->immunization[$n]
+			      ->product
+			      ->code		          = (string)	$entryRoot	->consumable
+															                    			->manufacturedProduct
+                                                        ->manufacturedMaterial
+                                                        ->code
+                                                        ->attributes()
+                                                        ->code;
+			$this ->immunization[$n]
+			      ->product
+			     ->code_system	      = (string)	$entryRoot	->consumable
+													                    					->manufacturedProduct
+                                                        ->manufacturedMaterial
+                                                        ->code
+                                                        ->attributes()
+                                                        ->codeSystem;
+			$this ->immunization[$n]
+			      ->product
+			      ->code_system_name	= (string)	$entryRoot	->consumable
+															                    			->manufacturedProduct
+                                                        ->manufacturedMaterial
+                                                        ->code
+                                                        ->attributes()
+                                                        ->codeSystemName;
+			$this ->immunization[$n]
+			      ->product
+			      ->translation
+			      ->name		          = (string)	$entryRoot	->consumable
+														                    				->manufacturedProduct
+                                                        ->manufacturedMaterial
+                                                        ->code
+                                                        ->translation
+                                                        ->attributes()
+                                                        ->displayName;
+			$this ->immunization[$n]
+			      ->product
+			      ->translation
+			      ->code		          = (string)	$entryRoot	->consumable
+											                    							->manufacturedProduct
+                                                        ->manufacturedMaterial
+                                                        ->code
+                                                        ->translation
+                                                        ->attributes()
+                                                        ->code;
+			$this ->immunization[$n]
+			     ->product
+			     ->translation
+			     ->code_system		    = (string)	$entryRoot	->consumable
+														                    				->manufacturedProduct
+                                                        ->manufacturedMaterial
+                                                        ->code
+                                                        ->translation
+                                                        ->attributes()
+                                                        ->codeSystem;
+			$this ->immunization[$n]
+			      ->product
+			      ->translation
+			      ->code_system_name	= (string)	$entryRoot	->consumable
+														                    				->manufacturedProduct
+                                                        ->manufacturedMaterial
+                                                        ->code
+                                                        ->translation
+                                                        ->attributes()
+                                                        ->codeSystemName;
+			$this ->immunization[$n]
+			     ->route
+			     ->name		             = (string)	$entryRoot	->routeCode
+										                    								->attributes()
+                                                        ->displayName;
+			$this ->immunization[$n]
+			      ->route
+			      ->code		          = (string)	$entryRoot	->routeCode
+																	                    	->attributes()
+                                                        ->code;
+			$this ->immunization[$n]
+			      ->route
+			      ->code_system	      = (string)	$entryRoot	->routeCode
+															                    			->attributes()
+                                                        ->codeSystem;
+			$this ->immunization[$n]
+			      ->route
+			     ->code_system_name 	= (string)	$entryRoot	->routeCode
+															                    			->attributes()
+                                                        ->codeSystemName;	
 		}
 		return true;
 	}
@@ -481,70 +600,90 @@ class Ccda {
 		foreach($xmlLab->entry as $entry) {
 			$n = count($this->lab);
 			
-			$this->lab[$n]->panel_name = (string) $entry		->organizer
-																->code
-																->attributes()
-																->displayName;
-			$this->lab[$n]->panel_code = (string) $entry		->organizer
-																->code
-																->attributes()
-																->code;
-			$this->lab[$n]->panel_code_system = (string) $entry	->organizer
-																->code
-																->attributes()
-																->codeSystem;
-			$this->lab[$n]->panel_code_system_name = (string) $entry	->organizer
-																		->code
-																		->attributes()
-																		->codeSystemName;
-			$this->lab[$n]->results->date = (string) $entry				->organizer
-																		->component
-																		->observation
-																		->effectiveTime
-																		->attributes()
-																		->value;
-			$this->lab[$n]->results->name = (string) $entry				->organizer
-																		->component
-																		->observation
-																		->code
-																		->attributes()
-																		->displayName;
-			$this->lab[$n]->results->code = (string) $entry				->organizer
-																		->component
-																		->observation
-																		->code
-																		->attributes()
-																		->code;
-			$this->lab[$n]->results->code_system = (string) $entry		->organizer
-																		->component
-																		->observation
-																		->code
-																		->attributes()
-																		->codeSystem;
-			$this->lab[$n]->results->code_system_name = (string) $entry	->organizer
-																		->component
-																		->observation
-																		->code
-																		->attributes()
-																		->codeSystemName;
-			$this->lab[$n]->results->value = (string) $entry			->organizer
-																		->component
-																		->observation
-																		->value
-																		->attributes()
-																		->value;
-			$this->lab[$n]->results->unit = (string) $entry				->organizer
-																		->component
-																		->observation
-																		->value
-																		->attributes()
-																		->unit;
-			$this->lab[$n]->results->code = (string) $entry				->organizer
-																		->component
-																		->observation
-																		->code
-																		->attributes()
-																		->code;
+			$this ->lab[$n]
+			      ->panel_name  = (string) $entry		->organizer
+															              	->code
+                                              ->attributes()
+                                              ->displayName;
+			$this ->lab[$n]
+			      ->panel_code  = (string) $entry		->organizer
+												              				->code
+                                              ->attributes()
+                                              ->code;
+			$this ->lab[$n]
+			      ->panel_code_system = (string) $entry	->organizer
+																                  ->code
+                                                  ->attributes()
+                                                  ->codeSystem;
+			$this ->lab[$n]
+			      ->panel_code_system_name = (string) $entry	->organizer
+													                    					->code
+                                                        ->attributes()
+                                                        ->codeSystemName;
+			$this ->lab[$n]
+			      ->results
+			      ->date      = (string) $entry				->organizer
+											            							->component
+                                                ->observation
+                                                ->effectiveTime
+                                                ->attributes()
+                                                ->value;
+			$this ->lab[$n]
+			      ->results
+			      ->name      = (string) $entry				->organizer
+										            								->component
+                                                ->observation
+                                                ->code
+                                                ->attributes()
+                                                ->displayName;
+			$this ->lab[$n]
+			      ->results
+			      ->code      = (string) $entry				->organizer
+										            								->component
+                                                ->observation
+                                                ->code
+                                                ->attributes()
+                                                ->code;
+			$this ->lab[$n]
+			      ->results
+			      ->code_system = (string) $entry		->organizer
+													          					->component
+                                              ->observation
+                                              ->code
+                                              ->attributes()
+                                              ->codeSystem;
+			$this ->lab[$n]
+			      ->results
+			      ->code_system_name = (string) $entry	->organizer
+															              			->component
+                                                  ->observation
+                                                  ->code
+                                                  ->attributes()
+                                                  ->codeSystemName;
+			$this ->lab[$n]
+			      ->results
+			      ->value     = (string) $entry			->organizer
+										          								->component
+                                              ->observation
+                                              ->value
+                                              ->attributes()
+                                              ->value;
+			$this ->lab[$n]
+			      ->results
+			      ->unit      = (string) $entry				->organizer
+												            						->component
+                                                ->observation
+                                                ->value
+                                                ->attributes()
+                                                ->unit;
+			$this ->lab[$n]
+			      ->results
+			      ->code      = (string) $entry				->organizer
+										            								->component
+                                                ->observation
+                                                ->code
+                                                ->attributes()
+                                                ->code;
 			}
 		return true;
 	}
@@ -552,70 +691,86 @@ class Ccda {
 	private function parse_dx($xmlDx) {
 		foreach($xmlDx->entry as $entry) {
 			$n = count($this->dx);
-			$this->dx[$n]->date_range->start = (string) $entry	->act
-																->effectiveTime
-																->low
-																->attributes()
-																->value;
-			$this->dx[$n]->date_range->end = (string) $entry	->act
-																->effectiveTime
-																->high
-																->attributes()
-																->value;
-			$this->dx[$n]->name = (string) $entry				->act
-																->entryRelationship
-																->observation
-																->value
-																->attributes()
-																->displayName;
-			$this->dx[$n]->code = (string) $entry				->act
-																->entryRelationship
-																->observation
-																->value
-																->attributes()
-																->code;
-			$this->dx[$n]->code_system = (string) $entry		->act
-																->entryRelationship
-																->observation
-																->value
-																->attributes()
-																->codeSystem;
-			$this->dx[$n]->translation->name = (string) $entry	->act
-																->entryRelationship
-																->observation
-																->value
-																->translation
-																->attributes()
-																->displayName;
-			$this->dx[$n]->translation->code = (string) $entry	->act
-																->entryRelationship
-																->observation
-																->value
-																->translation
-																->attributes()
-																->code;
-			$this->dx[$n]->translation->code_system = (string) $entry	->act
-																->entryRelationship
-																->observation
-																->value
-																->translation
-																->attributes()
-																->codeSystem;
-			$this->dx[$n]->translation->code_system_name = (string) $entry	->act
-																->entryRelationship
-																->observation
-																->value
-																->translation
-																->attributes()
-																->codeSystemName;
-			$this->dx[$n]->status = (string) $entry				->act
-																->entryRelationship
-																->observation
-																->entryRelationship
-																->observation
-																->value
-																->attributes()
-																->displayName;		
+			$this ->dx[$n]
+			      ->date_range
+			      ->start       = (string) $entry	->act
+												            				->effectiveTime
+                                            ->low
+                                            ->attributes()
+                                            ->value;
+			$this ->dx[$n]
+			      ->date_range
+			      ->end         = (string) $entry	->act
+										            						->effectiveTime
+                                            ->high
+                                            ->attributes()
+                                            ->value;
+			$this ->dx[$n]
+			      ->name        = (string) $entry	->act
+									            							->entryRelationship
+                                            ->observation
+                                            ->value
+                                            ->attributes()
+                                            ->displayName;
+			$this ->dx[$n]
+			      ->code        = (string) $entry	->act
+											          	  				->entryRelationship
+                                            ->observation
+                                            ->value
+                                            ->attributes()
+                                            ->code;
+			$this ->dx[$n]
+			      ->code_system = (string) $entry	->act
+													          		  	->entryRelationship
+                                            ->observation
+                                            ->value
+                                            ->attributes()
+                                            ->codeSystem;
+			$this ->dx[$n]
+			      ->translation
+            ->name        = (string) $entry	->act
+										            						->entryRelationship
+                                            ->observation
+                                            ->value
+                                            ->translation
+                                            ->attributes()
+                                            ->displayName;
+			$this ->dx[$n]
+			      ->translation
+            ->code        = (string) $entry	->act
+									            							->entryRelationship
+                                            ->observation
+                                            ->value
+                                            ->translation
+                                            ->attributes()
+                                            ->code;
+			$this ->dx[$n]
+			      ->translation
+			      ->code_system = (string) $entry	->act
+									            							->entryRelationship
+                                            ->observation
+                                            ->value
+                                            ->translation
+                                            ->attributes()
+                                            ->codeSystem;
+			$this ->dx[$n]
+			      ->translation
+			      ->code_system_name = (string) $entry	->act
+									                  							->entryRelationship
+                                                  ->observation
+                                                  ->value
+                                                  ->translation
+                                                  ->attributes()
+                                                  ->codeSystemName;
+			$this ->dx[$n]
+			      ->status = (string) $entry	->act
+										    				    		->entryRelationship
+                                        ->observation
+                                        ->entryRelationship
+                                        ->observation
+                                        ->value
+                                        ->attributes()
+                                        ->displayName;		
 		}
 		return true;
 	}
@@ -624,103 +779,136 @@ class Ccda {
 		foreach($xmlProc->entry as $entry) {
 			$n = count($this->proc);
 			
-			$this->proc[$n]->date		= (string) $entry	->procedure
-													->effectiveTime
-													->attributes()
-													->value;
-			$this->proc[$n]->name		= (string) $entry	->procedure
-													->code
-													->attributes()
-													->displayName;
-			$this->proc[$n]->code		= (string) $entry	->procedure
-													->code
-													->attributes()
-													->code;
-			$this->proc[$n]->code_system	= (string) $entry	->procedure
-													->code
-													->attributes()
-													->codeSystem;
-			$this->proc[$n]->performer->organization		= (string) $entry 	->procedure
-													->performer
-													->assignedEntity
-													->addr
-													->name;
-			$this->proc[$n]->performer->street		= array((string) $entry 	->procedure
-													->performer
-													->assignedEntity
-													->addr
-													->streetAddressLine[0],
-													(string) $entry 	->procedure
-													->performer
-													->assignedEntity
-													->addr
-													->streetAddressLine[1]);
-			$this->proc[$n]->performer->city	= (string) $entry 	->procedure
-													->performer
-													->assignedEntity
-													->addr
-													->city;
-			$this->proc[$n]->performer->state	= (string) $entry 	->procedure
-													->performer
-													->assignedEntity
-													->addr
-													->state;
-			$this->proc[$n]->performer->zip	= (string) $entry 	->procedure
-													->performer
-													->assignedEntity
-													->addr
-													->postalCode;
-			$this->proc[$n]->performer->country	= (string) $entry 	->procedure
-													->performer
-													->assignedEntity
-													->addr
-													->country;
-			$this->proc[$n]->performer->phone	= (string) $entry 	->procedure
-													->performer
-													->assignedEntity
-													->telecom
-													->attributes()
-													->value;	
+			$this ->proc[$n]
+			      ->date		= (string) $entry	->procedure
+										              			->effectiveTime
+                                        ->attributes()
+                                        ->value;
+			$this ->proc[$n]
+			      ->name		= (string) $entry	->procedure
+											              		->code
+                                        ->attributes()
+                                        ->displayName;
+			$this ->proc[$n]
+			      ->code		= (string) $entry	->procedure
+										              			->code
+                                        ->attributes()
+                                        ->code;
+			$this ->proc[$n]
+			      ->code_system	= (string) $entry	->procedure
+										                  			->code
+                                            ->attributes()
+                                            ->codeSystem;
+			$this ->proc[$n]
+			      ->performer
+			      ->organization		= (string) $entry ->procedure
+										                        		->performer
+                                                ->assignedEntity
+                                                ->addr
+                                                ->name;
+			$this ->proc[$n]
+			      ->performer
+			      ->street		= array(
+			                    (string) $entry ->procedure
+						                							->performer
+                                          ->assignedEntity
+                                          ->addr
+                                          ->streetAddressLine[0],
+													(string) $entry ->procedure
+								                					->performer
+                                          ->assignedEntity
+                                          ->addr
+                                          ->streetAddressLine[1]);
+			$this ->proc[$n]
+			      ->performer
+			      ->city	    = (string) $entry ->procedure
+						                							->performer
+                                          ->assignedEntity
+                                          ->addr
+                                          ->city;
+			$this ->proc[$n]
+			      ->performer
+			      ->state	    = (string) $entry ->procedure
+												                	->performer
+                                          ->assignedEntity
+                                          ->addr
+                                          ->state;
+			$this ->proc[$n]
+			      ->performer
+			      ->zip	      = (string) $entry ->procedure
+								                					->performer
+                                          ->assignedEntity
+                                          ->addr
+                                          ->postalCode;
+			$this ->proc[$n]
+			      ->performer
+			      ->country	  = (string) $entry ->procedure
+										                			->performer
+                                          ->assignedEntity
+                                          ->addr
+                                          ->country;
+			$this ->proc[$n]
+			      ->performer
+			      ->phone	    = (string) $entry ->procedure
+							                						->performer
+                                          ->assignedEntity
+                                          ->telecom
+                                          ->attributes()
+                                          ->value;	
 		}
-	
-	
 		return true;
 	}
 
 	private function parse_vitals($xmlVitals) {
 		foreach($xmlVitals->entry as $entry) {
 			$n = count($this->vital);
-			$this->vital[$n]->date = (string) $entry			->organizer
-																->effectiveTime
-																->attributes()
-																->value;
-			$this->vital[$n]->results = array();
+			$this ->vital[$n]
+			      ->date      = (string) $entry	->organizer
+													          			->effectiveTime
+                                          ->attributes()
+                                          ->value;
+      
+      // Pull each vital sign for a given date
+			$this ->vital[$n]
+			      ->results   = array();
 			$m = 0;
 			foreach($entry->organizer->component as $component) {
-				$this->vital[$n]->results[$m]->name = (string) $component		->observation
-																				->code
-																				->attributes()
-																				->displayName;
-				$this->vital[$n]->results[$m]->code = (string) $component		->observation
-																				->code
-																				->attributes()
-																				->code;
-				$this->vital[$n]->results[$m]->code_system = (string) $component->observation
-																				->code
-																				->attributes()
-																				->codeSystem;
-				$this->vital[$n]->results[$m]->code_system_name = (string) $component->observation
-																				->code
-																				->attributes()
-																				->codeSystemName;
-				$this->vital[$n]->results[$m]->value = (string) $component		->observation
-																				->value
-																				->attributes()
-																				->value;
-				$this->vital[$n]->results[$m]->unit = (string) $component		->observation
-																				->value
-																				->attributes()
-																				->unit;
+				$this ->vital[$n]
+				      ->results[$m]
+				      ->name        = (string) $component	->observation
+																			          	->code
+                                                  ->attributes()
+                                                  ->displayName;
+				$this ->vital[$n]
+				      ->results[$m]
+				      ->code        = (string) $component	->observation
+																			          	->code
+                                                  ->attributes()
+                                                  ->code;
+				$this ->vital[$n]
+				      ->results[$m]
+				      ->code_system = (string) $component ->observation
+														        				  		->code
+                                                  ->attributes()
+                                                  ->codeSystem;
+				$this ->vital[$n]
+				      ->results[$m]
+				      ->code_system_name = (string) $component  ->observation
+															                					->code
+                                                        ->attributes()
+                                                        ->codeSystemName;
+				$this ->vital[$n]
+				      ->results[$m]
+				      ->value       = (string) $component	->observation
+															          					->value
+                                                  ->attributes()
+                                                  ->value;
+				$this ->vital[$n]
+				      ->results[$m]
+				      ->unit        = (string) $component	->observation
+																          				->value
+                                                  ->attributes()
+                                                  ->unit;
 				$m++;
 			}	
 		}
@@ -730,108 +918,141 @@ class Ccda {
 		foreach($xmlEnc->entry as $entry) {
 			$n = count($this->enc);
 			
-			$this->enc[$n]->date		= (string) $entry	->encounter
-															->effectiveTime
-															->attributes()
-															->value;
-			$this->enc[$n]->name		= (string) $entry	->encounter
-															->code
-															->attributes()
-															->displayName;
-			$this->enc[$n]->code		= (string) $entry	->encounter
-															->code
-															->attributes()
-															->code;
-			$this->enc[$n]->code_system		= (string) $entry	->encounter
-															->code
-															->attributes()
-															->codeSystem;
-			$this->enc[$n]->code_system_name		= (string) $entry	->encounter
-															->code
-															->attributes()
-															->codeSystemName;
-			$this->enc[$n]->code_system_version		= (string) $entry	->encounter
-															->code
-															->attributes()
-															->codeSystemVersion;
-			$this->enc[$n]->finding->name		= (string) $entry	->encounter
-															->entryRelationship
-															->observation
-															->value
-															->attributes()
-															->displayName;
-			$this->enc[$n]->finding->code		= (string) $entry	->encounter
-															->entryRelationship
-															->observation
-															->value
-															->attributes()
-															->code;
-			$this->enc[$n]->finding->code_system		= (string) $entry	->encounter
-															->entryRelationship
-															->observation
-															->value
-															->attributes()
-															->codeSystem;
-			$this->enc[$n]->performer->name		= (string) $entry	->encounter
-															->performer
-															->assignedEntity
-															->code
-															->attributes()
-															->displayName;
-			$this->enc[$n]->performer->code_system		= (string) $entry	->encounter
-															->performer
-															->assignedEntity
-															->code
-															->attributes()
-															->codeSystem;
-			$this->enc[$n]->performer->code		= (string) $entry	->encounter
-															->performer
-															->assignedEntity
-															->code
-															->attributes()
-															->code;
-			$this->enc[$n]->performer->code_system_name		= (string) $entry	->encounter
-															->performer
-															->assignedEntity
-															->code
-															->attributes()
-															->codeSystemName;
-			$this->enc[$n]->location->organization		= (string) $entry	->encounter
-															->participant
-															->participantRole
-															->code
-															->attributes()
-															->displayName;
-			$this->enc[$n]->location->street		= array((string) $entry	->encounter
-															->participant
-															->participantRole
-															->addr
-															->streetAddressLine[0],
+			$this ->enc[$n]
+			      ->date		= (string) $entry	->encounter
+													          		->effectiveTime
+                                        ->attributes()
+                                        ->value;
+			$this ->enc[$n]
+			      ->name		= (string) $entry	->encounter
+										          					->code
+                                        ->attributes()
+                                        ->displayName;
+			$this ->enc[$n]
+			      ->code		= (string) $entry	->encounter
+											          				->code
+                                        ->attributes()
+                                        ->code;
+			$this ->enc[$n]
+			      ->code_system		= (string) $entry	->encounter
+												                			->code
+                                              ->attributes()
+                                              ->codeSystem;
+			$this ->enc[$n]
+			      ->code_system_name		= (string) $entry	->encounter
+													                      		->code
+                                                    ->attributes()
+                                                    ->codeSystemName;
+			$this ->enc[$n]
+			      ->code_system_version		= (string) $entry	->encounter
+												                        			->code
+                                                      ->attributes()
+                                                      ->codeSystemVersion;
+			$this ->enc[$n]
+			      ->finding
+			      ->name		  = (string) $entry	->encounter
+											            				->entryRelationship
+                                          ->observation
+                                          ->value
+                                          ->attributes()
+                                          ->displayName;
+			$this ->enc[$n]
+			      ->finding
+			      ->code		  = (string) $entry	->encounter
+												            			->entryRelationship
+                                          ->observation
+                                          ->value
+                                          ->attributes()
+                                          ->code;
+			$this ->enc[$n]
+			      ->finding
+			      ->code_system		= (string) $entry	->encounter
+												                			->entryRelationship
+                                              ->observation
+                                              ->value
+                                              ->attributes()
+                                              ->codeSystem;
+			$this ->enc[$n]
+			      ->performer
+            ->name		    = (string) $entry	->encounter
+											               				->performer
+                                            ->assignedEntity
+                                            ->code
+                                            ->attributes()
+                                            ->displayName;
+			$this ->enc[$n]
+			      ->performer
+            ->code_system		= (string) $entry	->encounter
+													                		->performer
+                                              ->assignedEntity
+                                              ->code
+                                              ->attributes()
+                                              ->codeSystem;
+			$this ->enc[$n]
+			      ->performer
+			      ->code		  = (string) $entry	->encounter
+											            				->performer
+                                          ->assignedEntity
+                                          ->code
+                                          ->attributes()
+                                          ->code;
+			$this ->enc[$n]
+			      ->performer
+			      ->code_system_name		= (string) $entry	->encounter
+												                      			->performer
+                                                    ->assignedEntity
+                                                    ->code
+                                                    ->attributes()
+                                                    ->codeSystemName;
+			$this ->enc[$n]
+			      ->location
+			      ->organization		= (string) $entry	->encounter
+												                  			->participant
+                                                ->participantRole
+                                                ->code
+                                                ->attributes()
+                                                ->displayName;
+			$this ->enc[$n]
+			      ->location
+			      ->street		    = array(
+			                        (string) $entry	->encounter
+														                	->participant
+                                              ->participantRole
+                                              ->addr
+                                              ->streetAddressLine[0],
 															(string) $entry	->encounter
-															->participant
-															->participantRole
-															->addr
-															->streetAddressLine[1]);
-			$this->enc[$n]->location->city		= (string) $entry	->encounter
-															->participant
-															->participantRole
-															->addr
-															->city;
-			$this->enc[$n]->location->state		= (string) $entry	->encounter
-															->participant
-															->participantRole
-															->addr
-															->state;
-			$this->enc[$n]->location->zip		= (string) $entry	->encounter
-															->participant
-															->participantRole
-															->addr
-															->postalCode;
-			$this->enc[$n]->location->country		= (string) $entry	->encounter
-															->participant
-															->participantRole
-															->addr
-															->country;
+									                						->participant
+                                              ->participantRole
+                                              ->addr
+                                              ->streetAddressLine[1]);
+			$this ->enc[$n]
+			      ->location
+            ->city		      = (string) $entry	->encounter
+										                					->participant
+                                              ->participantRole
+                                              ->addr
+                                              ->city;
+			$this ->enc[$n]
+			      ->location
+			      ->state		     = (string) $entry	->encounter
+											                				->participant
+                                              ->participantRole
+                                              ->addr
+                                              ->state;
+			$this ->enc[$n]
+			      ->location
+			      ->zip		       = (string) $entry	->encounter
+										                					->participant
+                                              ->participantRole
+                                              ->addr
+                                              ->postalCode;
+			$this ->enc[$n]
+			      ->location
+			      ->country		   = (string) $entry	->encounter
+												                			->participant
+                                              ->participantRole
+                                              ->addr
+                                              ->country;
 		}
 		return true;
 	}
