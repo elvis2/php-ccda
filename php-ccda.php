@@ -331,7 +331,66 @@ class Ccda {
 																		->playingEntity
 																		->code
 																		->attributes()
-																		->codeSystemName;	
+																		->codeSystemName;
+			$this->allergy[$n]->reaction_type->name 		= (string) $entry 	->act
+																				->entryRelationship
+																				->observation
+																				->value
+																				->attributes()
+																				->displayName;
+			$this->allergy[$n]->reaction_type->code 		= (string) $entry 	->act
+																				->entryRelationship
+																				->observation
+																				->value
+																				->attributes()
+																				->code;
+			$this->allergy[$n]->reaction_type->code_system 		= (string) $entry 	->act
+																				->entryRelationship
+																				->observation
+																				->value
+																				->attributes()
+																				->codeSystem;
+			$this->allergy[$n]->reaction_type->code_system_name 		= (string) $entry 	->act
+																				->entryRelationship
+																				->observation
+																				->value
+																				->attributes()
+																				->codeSystemName;
+			foreach($entry->act->entryRelationship->observation->entryRelationship as $detail) {
+				$test = $detail->observation->templateId->attributes()->root;
+
+				// Reaction Type
+				if ($test == '2.16.840.1.113883.10.20.22.4.9') {
+					$this->allergy[$n]->reaction->name		= (string) $detail	->observation
+																				->value
+																				->attributes()
+																				->displayName;
+					$this->allergy[$n]->reaction->code		= (string) $detail	->observation
+																				->value
+																				->attributes()
+																				->code;
+					$this->allergy[$n]->reaction->code_system	= (string) $detail	->observation
+																				->value
+																				->attributes()
+																				->codeSystem;
+				}
+				
+				// Severity
+				if ($test == '2.16.840.1.113883.10.20.22.4.8') {
+					$this->allergy[$n]->severity->name 		= (string) $detail 	->observation
+																				->value
+																				->attributes()
+																				->displayName;
+					$this->allergy[$n]->severity->code 		= (string) $detail 	->observation
+																				->value
+																				->attributes()
+																				->code;
+					$this->allergy[$n]->severity->code_system 	= (string) $detail 	->observation
+																				->value
+																				->attributes()
+																				->codeSystem;
+				}
+			}
 		}
 		return true;
 	}
