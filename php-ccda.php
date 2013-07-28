@@ -28,7 +28,10 @@ class Ccda {
 
 		// If data was passed with constructor, parse it.
 		if ($string != '') {
-			$this->load_xml(simplexml_load_string($string));		
+			if(!is_object($string)) {
+				$string = simplexml_load_string($string);
+			}
+			$this->load_xml($string);		
 		}
 	}
 	
