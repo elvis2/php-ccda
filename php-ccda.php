@@ -97,7 +97,7 @@ class Ccda {
 			
 			// Vitals
 			if ($test == '2.16.840.1.113883.10.20.22.2.4.1') {
-				$this->parse_vitals();
+				$this->parse_vitals($xmlRoot->component[$i]->section);
 			}
 			$i++;
 		}
@@ -408,7 +408,43 @@ class Ccda {
 		return true;
 	}
 
-	private function parse_vitals() {
+	private function parse_vitals($xmlVitals) {
+		foreach($xmlVitals->entry as $entry) {
+			$n = count($this->vital);
+			$this->vital[$n]->date = (string) $entry			->organizer
+																->effectiveTime
+																->attributes()
+																->value;
+			$this->vital[$n]->results = array();
+			$m = 0;
+			foreach($entry->organizer->component as $component) {
+				$this->vital[$n]->results[$m]->name = (string) $component		->observation
+																				->code
+																				->attributes()
+																				->displayName;
+				$this->vital[$n]->results[$m]->code = (string) $component		->observation
+																				->code
+																				->attributes()
+																				->code;
+				$this->vital[$n]->results[$m]->code_system = (string) $component->observation
+																				->code
+																				->attributes()
+																				->codeSystem;
+				$this->vital[$n]->results[$m]->code_system_name = (string) $component->observation
+																				->code
+																				->attributes()
+																				->codeSystemName;
+				$this->vital[$n]->results[$m]->value = (string) $component		->observation
+																				->value
+																				->attributes()
+																				->value;
+				$this->vital[$n]->results[$m]->unit = (string) $component		->observation
+																				->value
+																				->attributes()
+																				->unit;
+				$m++;
+			}	
+		}
 		return true;
 	}
 }
