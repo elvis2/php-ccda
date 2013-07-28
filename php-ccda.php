@@ -459,6 +459,7 @@ class Ccda {
 
       $entryRoot = $entry->act->entryRelationship->observation;
 			foreach($entryRoot->entryRelationship as $detail) {
+			  if (!is_object($detail->observation->templateId)) continue;
 				$test = $detail->observation->templateId->attributes()->root;
         $varname = '';
 
@@ -786,6 +787,7 @@ class Ccda {
 	private function parse_proc($xmlProc) {
 		foreach($xmlProc->entry as $entry) {
 			$n = count($this->proc);
+			if(!is_object($entry->procedure->code)) continue;
 			
 			$this ->proc[$n]
 			      ->date		= (string) $entry	->procedure
@@ -855,14 +857,19 @@ class Ccda {
                                           ->assignedEntity
                                           ->addr
                                           ->country;
-			$this ->proc[$n]
-			      ->performer
-			      ->phone	    = (string) $entry ->procedure
-							                						->performer
-                                          ->assignedEntity
-                                          ->telecom
-                                          ->attributes()
-                                          ->value;	
+      if (is_object($entry  ->procedure
+                            ->performer
+                            ->assignedEntity
+                            ->telecom)) {
+        $this ->proc[$n]
+  			      ->performer
+  			      ->phone	    = (string) $entry ->procedure
+  							                						->performer
+                                            ->assignedEntity
+                                            ->telecom
+                                            ->attributes()
+                                            ->value;	
+        }
 		}
 		return true;
 	}
@@ -956,70 +963,85 @@ class Ccda {
 												                        			->code
                                                       ->attributes()
                                                       ->codeSystemVersion;
-			$this ->enc[$n]
-			      ->finding
-			      ->name		  = (string) $entry	->encounter
-											            				->entryRelationship
-                                          ->observation
-                                          ->value
-                                          ->attributes()
-                                          ->displayName;
-			$this ->enc[$n]
-			      ->finding
-			      ->code		  = (string) $entry	->encounter
-												            			->entryRelationship
-                                          ->observation
-                                          ->value
-                                          ->attributes()
-                                          ->code;
-			$this ->enc[$n]
-			      ->finding
-			      ->code_system		= (string) $entry	->encounter
-												                			->entryRelationship
+      if(is_object($entry ->encounter
+                          ->entryRelationship
+                          ->observation
+                          ->value)) {
+    			$this ->enc[$n]
+    			      ->finding
+    			      ->name		  = (string) $entry	->encounter
+    											            				->entryRelationship
                                               ->observation
                                               ->value
                                               ->attributes()
-                                              ->codeSystem;
-			$this ->enc[$n]
-			      ->performer
-            ->name		    = (string) $entry	->encounter
-											               				->performer
-                                            ->assignedEntity
-                                            ->code
-                                            ->attributes()
-                                            ->displayName;
-			$this ->enc[$n]
-			      ->performer
-            ->code_system		= (string) $entry	->encounter
-													                		->performer
+                                              ->displayName;
+    			$this ->enc[$n]
+    			      ->finding
+    			      ->code		  = (string) $entry	->encounter
+    												            			->entryRelationship
+                                              ->observation
+                                              ->value
+                                              ->attributes()
+                                              ->code;
+    			$this ->enc[$n]
+    			      ->finding
+    			      ->code_system		= (string) $entry	->encounter
+    												                			->entryRelationship
+                                                  ->observation
+                                                  ->value
+                                                  ->attributes()
+                                                  ->codeSystem;
+          }
+      if(is_object($entry ->encounter
+                          ->performer
+                          ->assignedEntity
+                          ->code)) {
+  			$this ->enc[$n]
+  			      ->performer
+              ->name		    = (string) $entry	->encounter
+  											               				->performer
                                               ->assignedEntity
                                               ->code
                                               ->attributes()
-                                              ->codeSystem;
-			$this ->enc[$n]
-			      ->performer
-			      ->code		  = (string) $entry	->encounter
-											            				->performer
-                                          ->assignedEntity
-                                          ->code
-                                          ->attributes()
-                                          ->code;
-			$this ->enc[$n]
-			      ->performer
-			      ->code_system_name		= (string) $entry	->encounter
-												                      			->performer
-                                                    ->assignedEntity
-                                                    ->code
-                                                    ->attributes()
-                                                    ->codeSystemName;
-			$this ->enc[$n]
-			      ->location
-			      ->organization		= (string) $entry	->encounter
-												                  			->participant
-                                                ->participantRole
+                                              ->displayName;
+  			$this ->enc[$n]
+  			      ->performer
+              ->code_system		= (string) $entry	->encounter
+  													                		->performer
+                                                ->assignedEntity
                                                 ->code
                                                 ->attributes()
-                                                ->displayName;
+                                                ->codeSystem;
+  			$this ->enc[$n]
+  			      ->performer
+  			      ->code		  = (string) $entry	->encounter
+  											            				->performer
+                                            ->assignedEntity
+                                            ->code
+                                            ->attributes()
+                                            ->code;
+  			$this ->enc[$n]
+  			      ->performer
+  			      ->code_system_name		= (string) $entry	->encounter
+  												                      			->performer
+                                                      ->assignedEntity
+                                                      ->code
+                                                      ->attributes()
+                                                      ->codeSystemName;
+        }
+      if(is_object($entry ->encounter
+                         ->participant
+                         ->participantRole
+                         ->code)) {
+  			$this ->enc[$n]
+  			      ->location
+  			      ->organization		= (string) $entry	->encounter
+  												                  			->participant
+                                                  ->participantRole
+                                                  ->code
+                                                  ->attributes()
+                                                  ->displayName;
+        }
 			$this ->enc[$n]
 			      ->location
 			      ->street		    = array(
@@ -1068,29 +1090,30 @@ class Ccda {
 	private function parse_careplan($xmlCare) {
   	foreach($xmlCare->entry as $entry) {
     	$n = count($this->plan);
+    	
+    	if (is_object($entry->act->code)) $entryRoot = $entry->act;
+    	elseif (is_object($entry->observation->code)) $entryRoot = $entry->observation;
+    	else continue;
+
     	$this ->plan[$n]
-    	      ->name        = (string)  $entry  ->act
-    	                                        ->code
-    	                                        ->attributes()
-    	                                        ->displayName;
+    	      ->name        = (string)  $entryRoot  ->code
+    	                                            ->attributes()
+                                                  ->displayName;
     	$this ->plan[$n]
-    	      ->code        = (string)  $entry  ->act
-    	                                        ->code
-    	                                        ->attributes()
-    	                                        ->code;
+    	      ->code        = (string)  $entryRoot  ->code
+    	                                            ->attributes()
+                                                  ->code;
     	$this ->plan[$n]
-    	      ->code_system = (string)  $entry  ->act
-    	                                        ->code
-    	                                        ->attributes()
-    	                                        ->codeSystem;
+    	      ->code_system = (string)  $entryRoot  ->code
+      	                                          ->attributes()
+                                                  ->codeSystem;
     	$this ->plan[$n]
-    	      ->text        = (string)  $entry  ->act
-    	                                        ->text;
+    	      ->text        = (string)  $entryRoot  ->text;
+    	      
     	$this ->plan[$n]
-    	      ->status      = (string)  $entry  ->act
-    	                                        ->statusCode
-    	                                        ->attributes()
-    	                                        ->code;
+    	      ->status      = (string)  $entryRoot  ->statusCode
+    	                                            ->attributes()
+                                                  ->code;
   	}
   	return true;
 	}
