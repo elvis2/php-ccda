@@ -25,6 +25,7 @@ class Ccda {
 		$this->vital = array();
 		$this->allergy = array();
 		$this->enc = array();
+		$this->plan = array();
 
 		// If data was passed with constructor, parse it.
 		if ($string != '') {
@@ -46,6 +47,7 @@ class Ccda {
 		$patient->vital = $this->vital;
 		$patient->allergy = $this->allergy;
 		$patient->enc = $this->enc;
+		$patient->care_plan = $this->plan;
 		return json_encode($patient, JSON_PRETTY_PRINT);
 	}
 	
@@ -107,6 +109,12 @@ class Ccda {
 			if ($test == '2.16.840.1.113883.10.20.22.2.4.1') {
 				$this->parse_vitals($xmlRoot->component[$i]->section);
 			}
+			
+			// Care Plan
+			if ($test == '2.16.840.1.113883.10.20.22.2.10') {
+  			$this->parse_careplan($xmlRoot->component[$i]->section);
+			}
+			
 			$i++;
 		}
 		
@@ -1056,6 +1064,37 @@ class Ccda {
 		}
 		return true;
 	}
+	
+	private function parse_careplan($xmlCare) {
+  	foreach($xmlCare->entry as $entry) {
+    	$n = count($this->plan);
+    	$this ->plan[$n]
+    	      ->name        = (string)  $entry  ->act
+    	                                        ->code
+    	                                        ->attributes()
+    	                                        ->displayName;
+    	$this ->plan[$n]
+    	      ->code        = (string)  $entry  ->act
+    	                                        ->code
+    	                                        ->attributes()
+    	                                        ->code;
+    	$this ->plan[$n]
+    	      ->code_system = (string)  $entry  ->act
+    	                                        ->code
+    	                                        ->attributes()
+    	                                        ->codeSystem;
+    	$this ->plan[$n]
+    	      ->text        = (string)  $entry  ->act
+    	                                        ->text;
+    	$this ->plan[$n]
+    	      ->status      = (string)  $entry  ->act
+    	                                        ->statusCode
+    	                                        ->attributes()
+    	                                        ->code;
+  	}
+  	return true;
+	}
+	
 	
 }
 
