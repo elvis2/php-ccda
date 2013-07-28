@@ -80,7 +80,7 @@ class Ccda {
 			
 			// Labs
 			else if ($test == '2.16.840.1.113883.10.20.22.2.3.1') {
-				$this->parse_labs();
+				$this->parse_labs($xmlRoot->component[$i]->section);
 			}
 
 			// Problems
@@ -261,7 +261,75 @@ class Ccda {
 		return true;
 	}
 
-	private function parse_labs() {
+	private function parse_labs($xmlLab) {
+		foreach($xmlLab->entry as $entry) {
+			$n = count($this->lab);
+			
+			$this->lab[$n]->panel_name = (string) $entry		->organizer
+																->code
+																->attributes()
+																->displayName;
+			$this->lab[$n]->panel_code = (string) $entry		->organizer
+																->code
+																->attributes()
+																->code;
+			$this->lab[$n]->panel_code_system = (string) $entry	->organizer
+																->code
+																->attributes()
+																->codeSystem;
+			$this->lab[$n]->panel_code_system_name = (string) $entry	->organizer
+																		->code
+																		->attributes()
+																		->codeSystemName;
+			$this->lab[$n]->results->date = (string) $entry				->organizer
+																		->component
+																		->observation
+																		->effectiveTime
+																		->attributes()
+																		->value;
+			$this->lab[$n]->results->name = (string) $entry				->organizer
+																		->component
+																		->observation
+																		->code
+																		->attributes()
+																		->displayName;
+			$this->lab[$n]->results->code = (string) $entry				->organizer
+																		->component
+																		->observation
+																		->code
+																		->attributes()
+																		->code;
+			$this->lab[$n]->results->code_system = (string) $entry		->organizer
+																		->component
+																		->observation
+																		->code
+																		->attributes()
+																		->codeSystem;
+			$this->lab[$n]->results->code_system_name = (string) $entry	->organizer
+																		->component
+																		->observation
+																		->code
+																		->attributes()
+																		->codeSystemName;
+			$this->lab[$n]->results->value = (string) $entry			->organizer
+																		->component
+																		->observation
+																		->value
+																		->attributes()
+																		->value;
+			$this->lab[$n]->results->unit = (string) $entry				->organizer
+																		->component
+																		->observation
+																		->value
+																		->attributes()
+																		->unit;
+			$this->lab[$n]->results->code = (string) $entry				->organizer
+																		->component
+																		->observation
+																		->code
+																		->attributes()
+																		->code;
+			}
 		return true;
 	}
 
