@@ -57,6 +57,15 @@ class Ccda {
 		return true;
 	}
 	
+	private function get_attr($xml, $attr) {
+  	if (is_object($xml)) {
+    	return (string) $xml->attributes()->{$attr};
+  	}
+  	else {
+    	return '';
+  	}
+	}
+	
 	private function parse() {
 		// Parse demographics
 		$this->parse_demo($this->xml->recordTarget->patientRole);
@@ -126,86 +135,86 @@ class Ccda {
 			$n = count($this->rx);
 			$this	->rx[$n]
 					  ->date_range
-            ->start 	    	= (string) $entry	->substanceAdministration
+            ->start 	    	= $this->get_attr(
+                                      $entry	->substanceAdministration
 													    	              ->effectiveTime
-                                              ->low
-                                              ->attributes()
-                                              ->value;
+                                              ->low,
+                                              'value');
 			$this ->rx[$n]
 			      ->date_range
-			      ->end          = (string) $entry	->substanceAdministration
+			      ->end          = $this->get_attr(
+			                                 $entry	->substanceAdministration
 																    		      ->effectiveTime
-                                              ->high
-                                              ->attributes()
-                                              ->value;
+                                              ->high,
+                                              'value');
 			$this ->rx[$n]
-			      ->product_name = (string) $entry	->substanceAdministration
+			      ->product_name = $this->get_attr(
+			                                 $entry	->substanceAdministration
 													          					->consumable
                                               ->manufacturedProduct
                                               ->manufacturedMaterial
-                                              ->code
-                                              ->attributes()
-                                              ->displayName;
+                                              ->code,
+                                              'displayName');
 			$this ->rx[$n]
-			      ->product_code = (string) $entry	->substanceAdministration
+			      ->product_code = $this->get_attr(
+			                                $entry	->substanceAdministration
 																	          	->consumable
                                               ->manufacturedProduct
                                               ->manufacturedMaterial
-                                              ->code
-                                              ->attributes()
-                                              ->code;										
+                                              ->code,
+                                              'code');										
 			$this ->rx[$n]
-			      ->product_code_system = (string) $entry ->substanceAdministration
+			      ->product_code_system = $this->get_attr(
+			                                       $entry ->substanceAdministration
 													                					->consumable
                                                     ->manufacturedProduct
                                                     ->manufacturedMaterial
-                                                    ->code
-                                                    ->attributes()
-                                                    ->codeSystem;
+                                                    ->code,
+                                                    'codeSystem');
 			$this ->rx[$n]
             ->translation
-            ->name          = (string) $entry	->substanceAdministration
+            ->name          = $this->get_attr(
+                                      $entry	->substanceAdministration
 														          				->consumable
                                               ->manufacturedProduct
                                               ->manufacturedMaterial
                                               ->code
-                                              ->translation
-                                              ->attributes()
-                                              ->displayName;
+                                              ->translation,
+                                              'displayName');
 
 			$this ->rx[$n]
 			      ->translation
-			      ->code_system   = (string) $entry	->substanceAdministration
+			      ->code_system   = $this->get_attr(
+			                                $entry	->substanceAdministration
 																	          	->consumable
                                               ->manufacturedProduct
                                               ->manufacturedMaterial
                                               ->code
-                                              ->translation
-                                              ->attributes()
-                                              ->codeSystemName;
+                                              ->translation,
+                                              'codeSystemName');
 
 			$this ->rx[$n]
 			      ->translation
-			      ->code          = (string) $entry	->substanceAdministration
+			      ->code          = $this->get_attr(
+			                                $entry	->substanceAdministration
 										          								->consumable
                                               ->manufacturedProduct
                                               ->manufacturedMaterial
                                               ->code
-                                              ->translation
-                                              ->attributes()
-                                              ->code;			
+                                              ->translation,
+                                              'code');		
 			$this ->rx[$n]
 			      ->dose_quantity
-			      ->value         = (string) $entry	->substanceAdministration
-												          						->doseQuantity
-                                              ->attributes()
-                                              ->value;
+			      ->value         = $this->get_attr(
+			                                $entry	->substanceAdministration
+												          						->doseQuantity,
+												          						'value');
 			$this ->rx[$n]
 			      ->dose_quantity
-			      ->unit          = (string) $entry	->substanceAdministration
-													          					->doseQuantity
-                                              ->attributes()
-                                              ->unit;
+			      ->unit          = $this->get_attr(
+			                                $entry	->substanceAdministration
+													          					->doseQuantity,
+													          					'unit');
 		}
 		return true;
 	}
@@ -237,14 +246,14 @@ class Ccda {
 															                ->country;
 		$this ->demo
 		      ->phone
-		      ->number 		    = (string) $xmlDemo	->telecom
-														                	->attributes()
-                                              ->value;
+		      ->number 		    = $this->get_attr(
+		                                $xmlDemo	->telecom,
+		                                          'value');
 		$this ->demo
 		      ->phone
-		      ->use 		      = (string) $xmlDemo	->telecom
-														                	->attributes()
-                                              ->use;
+		      ->use 		      = $this->get_attr(
+		                                $xmlDemo	->telecom,
+		                                          'use');
 		$this ->demo
 		      ->name
 		      ->first 		    = (string) $xmlDemo	->patient
@@ -256,36 +265,37 @@ class Ccda {
 													                		->name
                                               ->family;
 		$this ->demo
-		      ->gender 			  = (string) $xmlDemo	->patient
-													                  	->administrativeGenderCode
-                                              ->attributes()
-                                              ->code;
+		      ->gender 			  = $this->get_attr(
+		                                $xmlDemo	->patient
+													                  	->administrativeGenderCode,
+													                  	'code');
 		$this ->demo
-		      ->birthdate 		= (string) $xmlDemo	->patient
-														                	->birthTime
-                                              ->attributes()
-                                              ->value[0];
+		      ->birthdate 		= $this->get_attr(
+		                                $xmlDemo	->patient
+														                	->birthTime,
+														                	'value');
 		$this ->demo
-		      ->maritalStatus = (string) $xmlDemo	->patient
-											                 				->maritalStatusCode
-                                              ->attributes()
-                                              ->displayName;
+		      ->maritalStatus = $this->get_attr(
+		                                $xmlDemo	->patient
+											                 				->maritalStatusCode,
+											                 				'displayName');
+
 		$this ->demo
-		      ->race 			   	= (string) $xmlDemo	->patient
-													                		->raceCode
-                                              ->attributes()
-                                              ->displayName;
+		      ->race 			   	= $this->get_attr(
+		                                $xmlDemo	->patient
+													                		->raceCode,
+													                		'displayName');
 		$this ->demo
-		      ->ethnicity 		= (string) $xmlDemo	->patient
-													                		->ethnicGroupCode
-                                              ->attributes()
-                                              ->displayName;
+		      ->ethnicity 		= $this->get_attr(
+		                                $xmlDemo	->patient
+													                		->ethnicGroupCode,
+													                		'displayName');
 		$this ->demo
-		      ->language 			= (string) $xmlDemo	->patient
+		      ->language 			= $this->get_attr(
+		                                $xmlDemo	->patient
 													                		->languageCommunication
-                                              ->languageCode
-                                              ->attributes()
-                                              ->code;
+                                              ->languageCode,
+                                              'code');
 		
 		// Extract provider info
 		$this ->provider
@@ -294,10 +304,10 @@ class Ccda {
 																		            ->name;
 		$this ->provider
 		      ->organization
-		      ->phone 			   = (string) $xmlDemo  ->providerOrganization
-																		          	->telecom
-                                                ->attributes()
-                                                ->value;
+		      ->phone 			   = $this->get_attr(
+		                                  $xmlDemo  ->providerOrganization
+																		          	->telecom,
+																		          	'value');
 		$this ->provider
 		      ->organization
 		      ->addr
@@ -340,122 +350,122 @@ class Ccda {
 			$n = count($this->allergy);
 			$this ->allergy[$n]
 			      ->date_range
-			      ->start	       =	(string) $entry	->act
+			      ->start	       =	$this->get_attr(
+			                                 $entry	->act
 																	          	->effectiveTime
-                                              ->low
-                                              ->attributes()
-                                              ->value;
+                                              ->low,
+                                              'value');
 			$this ->allergy[$n]
 			      ->date_range
-			      ->end		       =	(string) $entry	->act
+			      ->end		       = $this->get_attr(
+			                                $entry	->act
 												          						->effectiveTime
-                                              ->high
-                                              ->attributes()
-                                              ->value;
+                                              ->high,
+                                              'value');
 			$this ->allergy[$n]
-			      ->name				=	(string) $entry	->act
+			      ->name				=	$this->get_attr(
+			                              $entry	->act
 															        			->entryRelationship
                                             ->observation
-                                            ->code
-                                            ->attributes()
-                                            ->displayName;
+                                            ->code,
+                                            'displayName');
 			$this ->allergy[$n]
-			      ->code				=	(string) $entry	->act
+			      ->code				=	$this->get_attr(
+			                              $entry	->act
 																        		->entryRelationship
                                             ->observation
-                                            ->code
-                                            ->attributes()
-                                            ->code;
+                                            ->code,
+                                            'code');
 			$this ->allergy[$n]
-			      ->code_system	=	(string) $entry	->act
+			      ->code_system	=	$this->get_attr(
+			                              $entry	->act
 										        								->entryRelationship
                                             ->observation
-                                            ->code
-                                            ->attributes()
-                                            ->codeSystem;
+                                            ->code,
+                                            'codeSystem');
 			$this ->allergy[$n]
-			      ->code_system_name	=	(string) $entry	->act
+			      ->code_system_name	=	$this->get_attr(
+			                                    $entry	->act
 																              		->entryRelationship
                                                   ->observation
-                                                  ->code
-                                                  ->attributes()
-                                                  ->codeSystemName;
+                                                  ->code,
+                                                  'codeSystemName');
 			$this ->allergy[$n]
 			      ->allergen
-            ->name		    =	(string) $entry	->act
+            ->name		    =	$this->get_attr(
+                                    $entry	->act
 														        				->entryRelationship
                                             ->observation
                                             ->participant
                                             ->participantRole
                                             ->playingEntity
-                                            ->code
-                                            ->attributes()
-                                            ->displayName;
+                                            ->code,
+                                            'displayName');
 			$this ->allergy[$n]
 			      ->allergen
-            ->code		    =	(string) $entry	->act
+            ->code		    =	$this->get_attr(
+                                    $entry	->act
 											        							->entryRelationship
                                             ->observation
                                             ->participant
                                             ->participantRole
                                             ->playingEntity
-                                            ->code
-                                            ->attributes()
-                                            ->code;
+                                            ->code,
+                                            'code');
 			$this ->allergy[$n]
 			      ->allergen
-			      ->code_system		=	(string) $entry	->act
+			      ->code_system		=	$this->get_attr(
+			                                 $entry	->act
 														          				->entryRelationship
                                               ->observation
                                               ->participant
                                               ->participantRole
                                               ->playingEntity
-                                              ->code
-                                              ->attributes()
-                                              ->codeSystem;
+                                              ->code,
+                                              'codeSystem');
 			$this ->allergy[$n]
 			      ->allergen
-			      ->code_system_name		=	(string) $entry	->act
+			      ->code_system_name		=	$this->get_attr(
+			                                      $entry	->act
 																                		->entryRelationship
                                                     ->observation
                                                     ->participant
                                                     ->participantRole
                                                     ->playingEntity
-                                                    ->code
-                                                    ->attributes()
-                                                    ->codeSystemName;
+                                                    ->code,
+                                                    'codeSystemName');
 			$this ->allergy[$n]
 			      ->reaction_type
-			      ->name 		         = (string) $entry 	->act
+			      ->name 		         = $this->get_attr(
+			                                    $entry 	->act
 												          								->entryRelationship
                                                   ->observation
-                                                  ->value
-                                                  ->attributes()
-                                                  ->displayName;
+                                                  ->value,
+                                                  'displayName');
 			$this ->allergy[$n]
 			      ->reaction_type
-			      ->code 		         = (string) $entry 	->act
+			      ->code 		         = $this->get_attr(
+			                                    $entry 	->act
 														          						->entryRelationship
                                                   ->observation
-                                                  ->value
-                                                  ->attributes()
-                                                  ->code;
+                                                  ->value,
+                                                  'code');
 			$this ->allergy[$n]
 			      ->reaction_type
-			      ->code_system 		= (string) $entry 	->act
+			      ->code_system 		= $this->get_attr(
+			                                    $entry 	->act
 															          					->entryRelationship
                                                   ->observation
-                                                  ->value
-                                                  ->attributes()
-                                                  ->codeSystem;
+                                                  ->value,
+                                                  'codeSystem');
 			$this ->allergy[$n]
 			      ->reaction_type
-			      ->code_system_name 	= (string) $entry 	->act
+			      ->code_system_name 	= $this->get_attr(
+			                                      $entry 	->act
 																	            			->entryRelationship
                                                     ->observation
-                                                    ->value
-                                                    ->attributes()
-                                                    ->codeSystemName;
+                                                    ->value,
+                                                    'codeSystemName');
 
       $entryRoot = $entry->act->entryRelationship->observation;
 			foreach($entryRoot->entryRelationship as $detail) {
@@ -473,28 +483,28 @@ class Ccda {
 				if ($varname != '') {
 				  $this ->allergy[$n]
 					      ->{$varname}
-					      ->name		    = (string) $detail	->observation
-																		              ->value
-                                                  ->attributes()
-                                                  ->displayName;
+					      ->name		    = $this->get_attr(
+					                                $detail	->observation
+																		              ->value,
+																		              'displayName');
 				  $this ->allergy[$n]
 					      ->{$varname}
-					      ->code		    = (string) $detail	->observation
-																		              ->value
-                                                  ->attributes()
-                                                  ->code;
+					      ->code		    = $this->get_attr(
+					                                $detail	->observation
+																		              ->value,
+																		              'code');
 				  $this ->allergy[$n]
 					      ->{$varname}
-					      ->code_system	= (string) $detail	->observation
-																		              ->value
-                                                  ->attributes()
-                                                  ->codeSystem;
+					      ->code_system	= $this->get_attr(
+					                                $detail	->observation
+																		              ->value,
+																		              'codeSystem');
 				  $this ->allergy[$n]
 					      ->{$varname}
-					      ->code_system_name	= (string) $detail	->observation
-																		                    ->value
-                                                        ->attributes()
-                                                        ->codeSystemName;
+					      ->code_system_name	= $this->get_attr(
+					                                      $detail	->observation
+																		                    ->value,
+																		                    'codeSystemName');
           }
         }
       }
@@ -506,101 +516,101 @@ class Ccda {
 			$n = count($this->immunization);
 			$entryRoot = $entry->substanceAdministration;
 			$this ->immunization[$n]
-			      ->date			      	= (string)	$entryRoot	->effectiveTime
-																                    		->attributes()
-                                                        ->value;
+			      ->date			      	= $this->get_attr(
+			                                      $entryRoot	->effectiveTime,
+			                                                 'value');
 			$this ->immunization[$n]
 			      ->product
-            ->name		          = (string)	$entryRoot	->consumable
+            ->name		          = $this->get_attr(
+                                            $entryRoot	->consumable
 												                    						->manufacturedProduct
                                                         ->manufacturedMaterial
-                                                        ->code
-                                                        ->attributes()
-                                                        ->displayName;
+                                                        ->code,
+                                                        'displayName');
 			$this ->immunization[$n]
 			      ->product
-			      ->code		          = (string)	$entryRoot	->consumable
+			      ->code		          = $this->get_attr(
+			                                       $entryRoot	->consumable
 															                    			->manufacturedProduct
                                                         ->manufacturedMaterial
-                                                        ->code
-                                                        ->attributes()
-                                                        ->code;
+                                                        ->code,
+                                                        'code');
 			$this ->immunization[$n]
 			      ->product
-			     ->code_system	      = (string)	$entryRoot	->consumable
+            ->code_system	      = $this->get_attr(
+			                                      $entryRoot	->consumable
 													                    					->manufacturedProduct
                                                         ->manufacturedMaterial
-                                                        ->code
-                                                        ->attributes()
-                                                        ->codeSystem;
+                                                        ->code,
+                                                        'codeSystem');
 			$this ->immunization[$n]
 			      ->product
-			      ->code_system_name	= (string)	$entryRoot	->consumable
+			      ->code_system_name	= $this->get_attr(
+			                                      $entryRoot	->consumable
 															                    			->manufacturedProduct
                                                         ->manufacturedMaterial
-                                                        ->code
-                                                        ->attributes()
-                                                        ->codeSystemName;
+                                                        ->code,
+                                                        'codeSystemName');
 			$this ->immunization[$n]
 			      ->product
 			      ->translation
-			      ->name		          = (string)	$entryRoot	->consumable
+			      ->name		          = $this->get_attr(
+			                                      $entryRoot	->consumable
 														                    				->manufacturedProduct
                                                         ->manufacturedMaterial
                                                         ->code
-                                                        ->translation
-                                                        ->attributes()
-                                                        ->displayName;
+                                                        ->translation,
+                                                        'displayName');
 			$this ->immunization[$n]
 			      ->product
 			      ->translation
-			      ->code		          = (string)	$entryRoot	->consumable
+			      ->code		          = $this->get_attr(
+			                                      $entryRoot	->consumable
 											                    							->manufacturedProduct
                                                         ->manufacturedMaterial
                                                         ->code
-                                                        ->translation
-                                                        ->attributes()
-                                                        ->code;
+                                                        ->translation,
+                                                        'code');
 			$this ->immunization[$n]
 			     ->product
 			     ->translation
-			     ->code_system		    = (string)	$entryRoot	->consumable
+			     ->code_system		    = $this->get_attr(
+			                                      $entryRoot	->consumable
 														                    				->manufacturedProduct
                                                         ->manufacturedMaterial
                                                         ->code
-                                                        ->translation
-                                                        ->attributes()
-                                                        ->codeSystem;
+                                                        ->translation,
+                                                        'codeSystem');
 			$this ->immunization[$n]
 			      ->product
 			      ->translation
-			      ->code_system_name	= (string)	$entryRoot	->consumable
+			      ->code_system_name	= $this->get_attr(
+			                                      $entryRoot	->consumable
 														                    				->manufacturedProduct
                                                         ->manufacturedMaterial
                                                         ->code
-                                                        ->translation
-                                                        ->attributes()
-                                                        ->codeSystemName;
+                                                        ->translation,
+                                                        'codeSystemName');
 			$this ->immunization[$n]
 			     ->route
-			     ->name		             = (string)	$entryRoot	->routeCode
-										                    								->attributes()
-                                                        ->displayName;
+			     ->name		             = $this->get_attr(
+			                                      $entryRoot	->routeCode,
+			                                                  'displayName');
 			$this ->immunization[$n]
 			      ->route
-			      ->code		          = (string)	$entryRoot	->routeCode
-																	                    	->attributes()
-                                                        ->code;
+			      ->code		          = $this->get_attr(
+			                                      $entryRoot	->routeCode,
+			                                                  'code');
 			$this ->immunization[$n]
 			      ->route
-			      ->code_system	      = (string)	$entryRoot	->routeCode
-															                    			->attributes()
-                                                        ->codeSystem;
+			      ->code_system	      = $this->get_attr(
+			                                      $entryRoot	->routeCode,
+			                                                  'codeSystem');
 			$this ->immunization[$n]
 			      ->route
-			     ->code_system_name 	= (string)	$entryRoot	->routeCode
-															                    			->attributes()
-                                                        ->codeSystemName;	
+			     ->code_system_name 	= $this->get_attr(
+			                                      $entryRoot	->routeCode,
+			                                                  'codeSystemName');
 		}
 		return true;
 	}
@@ -610,89 +620,89 @@ class Ccda {
 			$n = count($this->lab);
 			
 			$this ->lab[$n]
-			      ->panel_name  = (string) $entry		->organizer
-															              	->code
-                                              ->attributes()
-                                              ->displayName;
+			      ->panel_name  = $this->get_attr(
+			                              $entry		->organizer
+															              	->code,
+															              	'displayName');
 			$this ->lab[$n]
-			      ->panel_code  = (string) $entry		->organizer
-												              				->code
-                                              ->attributes()
-                                              ->code;
+			      ->panel_code  = $this->get_attr(
+			                              $entry		->organizer
+												              				->code,
+												              				'code');
 			$this ->lab[$n]
-			      ->panel_code_system = (string) $entry	->organizer
-																                  ->code
-                                                  ->attributes()
-                                                  ->codeSystem;
+			      ->panel_code_system = $this->get_attr(
+			                                    $entry	->organizer
+																                  ->code,
+																                  'codeSystem');
 			$this ->lab[$n]
-			      ->panel_code_system_name = (string) $entry	->organizer
-													                    					->code
-                                                        ->attributes()
-                                                        ->codeSystemName;
+			      ->panel_code_system_name = $this->get_attr(
+			                                          $entry	->organizer
+													                    					->code,
+													                    					'codeSystemName');
 			$this ->lab[$n]
 			      ->results
-			      ->date      = (string) $entry				->organizer
+			      ->date      = $this->get_attr(
+			                            $entry				->organizer
 											            							->component
                                                 ->observation
-                                                ->effectiveTime
-                                                ->attributes()
-                                                ->value;
+                                                ->effectiveTime,
+                                                'value');
 			$this ->lab[$n]
 			      ->results
-			      ->name      = (string) $entry				->organizer
+			      ->name      = $this->get_attr(
+			                            $entry				->organizer
 										            								->component
                                                 ->observation
-                                                ->code
-                                                ->attributes()
-                                                ->displayName;
+                                                ->code,
+                                                'displayName');
 			$this ->lab[$n]
 			      ->results
-			      ->code      = (string) $entry				->organizer
+			      ->code      = $this->get_attr(
+			                            $entry				->organizer
 										            								->component
                                                 ->observation
-                                                ->code
-                                                ->attributes()
-                                                ->code;
+                                                ->code,
+                                                'code');
 			$this ->lab[$n]
 			      ->results
-			      ->code_system = (string) $entry		->organizer
+			      ->code_system = $this->get_attr(
+			                              $entry		->organizer
 													          					->component
                                               ->observation
-                                              ->code
-                                              ->attributes()
-                                              ->codeSystem;
+                                              ->code,
+                                              'codeSystem');
 			$this ->lab[$n]
 			      ->results
-			      ->code_system_name = (string) $entry	->organizer
+			      ->code_system_name = $this->get_attr(
+			                                    $entry	->organizer
 															              			->component
                                                   ->observation
-                                                  ->code
-                                                  ->attributes()
-                                                  ->codeSystemName;
+                                                  ->code,
+                                                  'codeSystemName');
 			$this ->lab[$n]
 			      ->results
-			      ->value     = (string) $entry			->organizer
+			      ->value     = $this->get_attr(
+			                            $entry			->organizer
 										          								->component
                                               ->observation
-                                              ->value
-                                              ->attributes()
-                                              ->value;
+                                              ->value,
+                                              'value');
 			$this ->lab[$n]
 			      ->results
-			      ->unit      = (string) $entry				->organizer
+			      ->unit      = $this->get_attr(
+			                            $entry				->organizer
 												            						->component
                                                 ->observation
-                                                ->value
-                                                ->attributes()
-                                                ->unit;
+                                                ->value,
+                                                'unit');
 			$this ->lab[$n]
 			      ->results
-			      ->code      = (string) $entry				->organizer
+			      ->code      = $this->get_attr(
+			                            $entry				->organizer
 										            								->component
                                                 ->observation
-                                                ->code
-                                                ->attributes()
-                                                ->code;
+                                                ->code,
+                                                'code');
 			}
 		return true;
 	}
@@ -702,84 +712,84 @@ class Ccda {
 			$n = count($this->dx);
 			$this ->dx[$n]
 			      ->date_range
-			      ->start       = (string) $entry	->act
+			      ->start       = $this->get_attr(
+			                              $entry	->act
 												            				->effectiveTime
-                                            ->low
-                                            ->attributes()
-                                            ->value;
+                                            ->low,
+                                            'value');
 			$this ->dx[$n]
 			      ->date_range
-			      ->end         = (string) $entry	->act
+			      ->end         = $this->get_attr(
+			                               $entry	->act
 										            						->effectiveTime
-                                            ->high
-                                            ->attributes()
-                                            ->value;
+                                            ->high,
+                                            'value');
 			$this ->dx[$n]
-			      ->name        = (string) $entry	->act
+			      ->name        = $this->get_attr(
+			                              $entry	->act
 									            							->entryRelationship
                                             ->observation
-                                            ->value
-                                            ->attributes()
-                                            ->displayName;
+                                            ->value,
+                                            'displayName');
 			$this ->dx[$n]
-			      ->code        = (string) $entry	->act
+			      ->code        = $this->get_attr(
+			                              $entry	->act
 											          	  				->entryRelationship
                                             ->observation
-                                            ->value
-                                            ->attributes()
-                                            ->code;
+                                            ->value,
+                                            'code');
 			$this ->dx[$n]
-			      ->code_system = (string) $entry	->act
+			      ->code_system = $this->get_attr(
+			                              $entry	->act
 													          		  	->entryRelationship
                                             ->observation
-                                            ->value
-                                            ->attributes()
-                                            ->codeSystem;
+                                            ->value,
+                                            'codeSystem');
 			$this ->dx[$n]
 			      ->translation
-            ->name        = (string) $entry	->act
+            ->name        = $this->get_attr(
+                                    $entry	->act
 										            						->entryRelationship
                                             ->observation
                                             ->value
-                                            ->translation
-                                            ->attributes()
-                                            ->displayName;
+                                            ->translation,
+                                            'displayName');
 			$this ->dx[$n]
 			      ->translation
-            ->code        = (string) $entry	->act
+            ->code        = $this->get_attr(
+                                    $entry	->act
 									            							->entryRelationship
                                             ->observation
                                             ->value
-                                            ->translation
-                                            ->attributes()
-                                            ->code;
+                                            ->translation,
+                                            'code');
 			$this ->dx[$n]
 			      ->translation
-			      ->code_system = (string) $entry	->act
+			      ->code_system = $this->get_attr(
+			                              $entry	->act
 									            							->entryRelationship
                                             ->observation
                                             ->value
-                                            ->translation
-                                            ->attributes()
-                                            ->codeSystem;
+                                            ->translation,
+                                            'codeSystem');
 			$this ->dx[$n]
 			      ->translation
-			      ->code_system_name = (string) $entry	->act
+			      ->code_system_name = $this->get_attr(
+			                                    $entry	->act
 									                  							->entryRelationship
                                                   ->observation
                                                   ->value
-                                                  ->translation
-                                                  ->attributes()
-                                                  ->codeSystemName;
+                                                  ->translation,
+                                                  'codeSystemName');
 			$this ->dx[$n]
-			      ->status = (string) $entry	->act
+			      ->status = $this->get_attr(
+			                           $entry	->act
 										    				    		->entryRelationship
                                         ->observation
                                         ->entryRelationship
                                         ->observation
-                                        ->value
-                                        ->attributes()
-                                        ->displayName;		
+                                        ->value,
+                                        'displayName');		
 		}
 		return true;
 	}
@@ -787,28 +797,27 @@ class Ccda {
 	private function parse_proc($xmlProc) {
 		foreach($xmlProc->entry as $entry) {
 			$n = count($this->proc);
-			if(!is_object($entry->procedure->code)) continue;
 			
 			$this ->proc[$n]
-			      ->date		= (string) $entry	->procedure
-										              			->effectiveTime
-                                        ->attributes()
-                                        ->value;
+			      ->date		= $this->get_attr(
+			                          $entry	->procedure
+										              			->effectiveTime,
+										              			'value');
 			$this ->proc[$n]
-			      ->name		= (string) $entry	->procedure
-											              		->code
-                                        ->attributes()
-                                        ->displayName;
+			      ->name		= $this->get_attr(
+			                          $entry	->procedure
+											              		->code,
+											              		'displayName');
 			$this ->proc[$n]
-			      ->code		= (string) $entry	->procedure
-										              			->code
-                                        ->attributes()
-                                        ->code;
+			      ->code		= $this->get_attr(
+			                          $entry	->procedure
+										              			->code,
+										              			'code');
 			$this ->proc[$n]
-			      ->code_system	= (string) $entry	->procedure
-										                  			->code
-                                            ->attributes()
-                                            ->codeSystem;
+			      ->code_system	= $this->get_attr(
+			                              $entry	->procedure
+										                  			->code,
+										                  			'codeSystem');
 			$this ->proc[$n]
 			      ->performer
 			      ->organization		= (string) $entry ->procedure
@@ -863,12 +872,12 @@ class Ccda {
                             ->telecom)) {
         $this ->proc[$n]
   			      ->performer
-  			      ->phone	    = (string) $entry ->procedure
+  			      ->phone	    = $this->get_attr(
+  			                             $entry ->procedure
   							                						->performer
                                             ->assignedEntity
-                                            ->telecom
-                                            ->attributes()
-                                            ->value;	
+                                            ->telecom,
+                                            'value');
         }
 		}
 		return true;
@@ -878,10 +887,10 @@ class Ccda {
 		foreach($xmlVitals->entry as $entry) {
 			$n = count($this->vital);
 			$this ->vital[$n]
-			      ->date      = (string) $entry	->organizer
-													          			->effectiveTime
-                                          ->attributes()
-                                          ->value;
+			      ->date      = $this->get_attr(
+			                            $entry	->organizer
+													          			->effectiveTime,
+													          			'value');
       
       // Pull each vital sign for a given date
 			$this ->vital[$n]
@@ -890,40 +899,40 @@ class Ccda {
 			foreach($entry->organizer->component as $component) {
 				$this ->vital[$n]
 				      ->results[$m]
-				      ->name        = (string) $component	->observation
-																			          	->code
-                                                  ->attributes()
-                                                  ->displayName;
+				      ->name        = $this->get_attr(
+				                              $component	->observation
+																			          	->code,
+																			          	'displayName');
 				$this ->vital[$n]
 				      ->results[$m]
-				      ->code        = (string) $component	->observation
-																			          	->code
-                                                  ->attributes()
-                                                  ->code;
+				      ->code        = $this->get_attr(
+				                              $component	->observation
+																			          	->code,
+																			          	'code');
 				$this ->vital[$n]
 				      ->results[$m]
-				      ->code_system = (string) $component ->observation
-														        				  		->code
-                                                  ->attributes()
-                                                  ->codeSystem;
+				      ->code_system = $this->get_attr(
+				                              $component ->observation
+														        				  		->code,
+														        				  		'codeSystem');
 				$this ->vital[$n]
 				      ->results[$m]
-				      ->code_system_name = (string) $component  ->observation
-															                					->code
-                                                        ->attributes()
-                                                        ->codeSystemName;
+				      ->code_system_name = $this->get_attr(
+				                                    $component  ->observation
+															                					->code,
+															                					'codeSystemName');
 				$this ->vital[$n]
 				      ->results[$m]
-				      ->value       = (string) $component	->observation
-															          					->value
-                                                  ->attributes()
-                                                  ->value;
+				      ->value       = $this->get_attr(
+				                              $component	->observation
+															          					->value,
+															          					'value');
 				$this ->vital[$n]
 				      ->results[$m]
-				      ->unit        = (string) $component	->observation
-																          				->value
-                                                  ->attributes()
-                                                  ->unit;
+				      ->unit        = $this->get_attr(
+				                              $component	->observation
+																          				->value,
+																          				'unit');
 				$m++;
 			}	
 		}
@@ -934,114 +943,99 @@ class Ccda {
 			$n = count($this->enc);
 			
 			$this ->enc[$n]
-			      ->date		= (string) $entry	->encounter
-													          		->effectiveTime
-                                        ->attributes()
-                                        ->value;
+			      ->date		= $this->get_attr(
+			                          $entry	->encounter
+													          		->effectiveTime,
+													          		'value');
 			$this ->enc[$n]
-			      ->name		= (string) $entry	->encounter
-										          					->code
-                                        ->attributes()
-                                        ->displayName;
+			      ->name		= $this->get_attr(
+			                          $entry	->encounter
+										          					->code,
+										          					'displayName');
 			$this ->enc[$n]
-			      ->code		= (string) $entry	->encounter
-											          				->code
-                                        ->attributes()
-                                        ->code;
+			      ->code		= $this->get_attr(
+			                           $entry	->encounter
+											          				->code,
+											          				'code');
 			$this ->enc[$n]
-			      ->code_system		= (string) $entry	->encounter
-												                			->code
-                                              ->attributes()
-                                              ->codeSystem;
+			      ->code_system		= $this->get_attr(
+			                                $entry	->encounter
+												                			->code,
+												                			'codeSystem');
 			$this ->enc[$n]
-			      ->code_system_name		= (string) $entry	->encounter
-													                      		->code
-                                                    ->attributes()
-                                                    ->codeSystemName;
+			      ->code_system_name		= $this->get_attr(
+			                                      $entry	->encounter
+													                      		->code,
+													                      		'codeSystemName');
 			$this ->enc[$n]
-			      ->code_system_version		= (string) $entry	->encounter
-												                        			->code
-                                                      ->attributes()
-                                                      ->codeSystemVersion;
-      if(is_object($entry ->encounter
-                          ->entryRelationship
-                          ->observation
-                          ->value)) {
-    			$this ->enc[$n]
-    			      ->finding
-    			      ->name		  = (string) $entry	->encounter
-    											            				->entryRelationship
+			      ->code_system_version		= $this->get_attr(
+			                                        $entry	->encounter
+												                        			->code,
+												                        			'codeSystemVersion');
+			$this ->enc[$n]
+			      ->finding
+			      ->name		  = $this->get_attr(
+			                            $entry	->encounter
+											            				->entryRelationship
+                                          ->observation
+                                          ->value,
+                                          'displayName');
+  		$this ->enc[$n]
+  		      ->finding
+  		      ->code		  = $this->get_attr(
+  		                            $entry	->encounter
+  											            			->entryRelationship
+                                          ->observation
+                                          ->value,
+                                          'code');
+			$this ->enc[$n]
+			      ->finding
+			      ->code_system		= $this->get_attr(
+			                                $entry	->encounter
+												                			->entryRelationship
                                               ->observation
-                                              ->value
-                                              ->attributes()
-                                              ->displayName;
-    			$this ->enc[$n]
-    			      ->finding
-    			      ->code		  = (string) $entry	->encounter
-    												            			->entryRelationship
-                                              ->observation
-                                              ->value
-                                              ->attributes()
-                                              ->code;
-    			$this ->enc[$n]
-    			      ->finding
-    			      ->code_system		= (string) $entry	->encounter
-    												                			->entryRelationship
-                                                  ->observation
-                                                  ->value
-                                                  ->attributes()
-                                                  ->codeSystem;
-          }
-      if(is_object($entry ->encounter
-                          ->performer
-                          ->assignedEntity
-                          ->code)) {
-  			$this ->enc[$n]
-  			      ->performer
-              ->name		    = (string) $entry	->encounter
-  											               				->performer
-                                              ->assignedEntity
-                                              ->code
-                                              ->attributes()
-                                              ->displayName;
-  			$this ->enc[$n]
-  			      ->performer
-              ->code_system		= (string) $entry	->encounter
-  													                		->performer
-                                                ->assignedEntity
-                                                ->code
-                                                ->attributes()
-                                                ->codeSystem;
-  			$this ->enc[$n]
-  			      ->performer
-  			      ->code		  = (string) $entry	->encounter
-  											            				->performer
+                                              ->value,
+                                              'codeSystem');
+		$this ->enc[$n]
+		      ->performer
+          ->name		    = $this->get_attr(
+                                  $entry	->encounter
+										               				->performer
+                                          ->assignedEntity
+                                          ->code,
+                                          'displayName');
+		$this ->enc[$n]
+		      ->performer
+          ->code_system		= $this->get_attr(
+                                    $entry	->encounter
+												                		->performer
                                             ->assignedEntity
-                                            ->code
-                                            ->attributes()
-                                            ->code;
-  			$this ->enc[$n]
-  			      ->performer
-  			      ->code_system_name		= (string) $entry	->encounter
-  												                      			->performer
-                                                      ->assignedEntity
-                                                      ->code
-                                                      ->attributes()
-                                                      ->codeSystemName;
-        }
-      if(is_object($entry ->encounter
-                         ->participant
-                         ->participantRole
-                         ->code)) {
-  			$this ->enc[$n]
-  			      ->location
-  			      ->organization		= (string) $entry	->encounter
-  												                  			->participant
-                                                  ->participantRole
-                                                  ->code
-                                                  ->attributes()
-                                                  ->displayName;
-        }
+                                            ->code,
+                                            'codeSystem');
+		$this ->enc[$n]
+		      ->performer
+		      ->code		  = $this->get_attr(
+		                             $entry	->encounter
+										            				->performer
+                                        ->assignedEntity
+                                        ->code,
+                                        'code');
+		$this ->enc[$n]
+		      ->performer
+		      ->code_system_name		= $this->get_attr(
+		                                      $entry	->encounter
+											                      			->performer
+                                                  ->assignedEntity
+                                                  ->code,
+                                                  'codeSystemName');
+		$this ->enc[$n]
+		      ->location
+		      ->organization		= $this->get_attr(
+		                                  $entry	->encounter
+											                  			->participant
+                                              ->participantRole
+                                              ->code,
+                                              'displayName');
 			$this ->enc[$n]
 			      ->location
 			      ->street		    = array(
@@ -1096,24 +1090,24 @@ class Ccda {
     	else continue;
 
     	$this ->plan[$n]
-    	      ->name        = (string)  $entryRoot  ->code
-    	                                            ->attributes()
-                                                  ->displayName;
+    	      ->name        = $this->get_attr(
+    	                                $entryRoot  ->code,
+    	                                            'displayName');
     	$this ->plan[$n]
-    	      ->code        = (string)  $entryRoot  ->code
-    	                                            ->attributes()
-                                                  ->code;
+    	      ->code        = $this->get_attr(
+    	                                $entryRoot  ->code,
+    	                                            'code');
     	$this ->plan[$n]
-    	      ->code_system = (string)  $entryRoot  ->code
-      	                                          ->attributes()
-                                                  ->codeSystem;
+    	      ->code_system = $this->get_attr(
+    	                                $entryRoot  ->code,
+    	                                            'codeSystem');
     	$this ->plan[$n]
     	      ->text        = (string)  $entryRoot  ->text;
     	      
     	$this ->plan[$n]
-    	      ->status      = (string)  $entryRoot  ->statusCode
-    	                                            ->attributes()
-                                                  ->code;
+    	      ->status      = $this->get_attr(
+    	                                $entryRoot  ->statusCode,
+    	                                            'code');
   	}
   	return true;
 	}
