@@ -24,6 +24,7 @@ class Ccda {
 		$this->proc = array();
 		$this->vital = array();
 		$this->allergy = array();
+		$this->enc = array();
 
 		// If data was passed with constructor, parse it.
 		if ($string != '') {
@@ -41,6 +42,7 @@ class Ccda {
 		$patient->proc = $this->proc;
 		$patient->vital = $this->vital;
 		$patient->allergy = $this->allergy;
+		$patient->enc = $this->enc;
 		return json_encode($patient, JSON_PRETTY_PRINT);
 	}
 	
@@ -70,8 +72,10 @@ class Ccda {
 			}
 			
 			// Encounters
-			//else if ($test == '2.16.840.1.113883.10.20.22.2.22')
-			//}
+			else if ($test == '2.16.840.1.113883.10.20.22.2.22' or
+					   $test == '2.16.840.1.113883.10.20.22.2.22.1') {
+				$this->parse_enc($xmlRoot->component[$i]->section);
+			}
 			
 			// Immunizations
 			else if ($test == '2.16.840.1.113883.10.20.22.2.2.1' or 
@@ -719,6 +723,116 @@ class Ccda {
 		}
 		return true;
 	}
+	private function parse_enc($xmlEnc) {
+		foreach($xmlEnc->entry as $entry) {
+			$n = count($this->enc);
+			
+			$this->enc[$n]->date		= (string) $entry	->encounter
+															->effectiveTime
+															->attributes()
+															->value;
+			$this->enc[$n]->name		= (string) $entry	->encounter
+															->code
+															->attributes()
+															->displayName;
+			$this->enc[$n]->code		= (string) $entry	->encounter
+															->code
+															->attributes()
+															->code;
+			$this->enc[$n]->code_system		= (string) $entry	->encounter
+															->code
+															->attributes()
+															->codeSystem;
+			$this->enc[$n]->code_system_name		= (string) $entry	->encounter
+															->code
+															->attributes()
+															->codeSystemName;
+			$this->enc[$n]->code_system_version		= (string) $entry	->encounter
+															->code
+															->attributes()
+															->codeSystemVersion;
+			$this->enc[$n]->finding->name		= (string) $entry	->encounter
+															->entryRelationship
+															->observation
+															->value
+															->attributes()
+															->displayName;
+			$this->enc[$n]->finding->code		= (string) $entry	->encounter
+															->entryRelationship
+															->observation
+															->value
+															->attributes()
+															->code;
+			$this->enc[$n]->finding->code_system		= (string) $entry	->encounter
+															->entryRelationship
+															->observation
+															->value
+															->attributes()
+															->codeSystem;
+			$this->enc[$n]->performer->name		= (string) $entry	->encounter
+															->performer
+															->assignedEntity
+															->code
+															->attributes()
+															->displayName;
+			$this->enc[$n]->performer->code_system		= (string) $entry	->encounter
+															->performer
+															->assignedEntity
+															->code
+															->attributes()
+															->codeSystem;
+			$this->enc[$n]->performer->code		= (string) $entry	->encounter
+															->performer
+															->assignedEntity
+															->code
+															->attributes()
+															->code;
+			$this->enc[$n]->performer->code_system_name		= (string) $entry	->encounter
+															->performer
+															->assignedEntity
+															->code
+															->attributes()
+															->codeSystemName;
+			$this->enc[$n]->location->organization		= (string) $entry	->encounter
+															->participant
+															->participantRole
+															->code
+															->attributes()
+															->displayName;
+			$this->enc[$n]->location->street		= array((string) $entry	->encounter
+															->participant
+															->participantRole
+															->addr
+															->streetAddressLine[0],
+															(string) $entry	->encounter
+															->participant
+															->participantRole
+															->addr
+															->streetAddressLine[1]);
+			$this->enc[$n]->location->city		= (string) $entry	->encounter
+															->participant
+															->participantRole
+															->addr
+															->city;
+			$this->enc[$n]->location->state		= (string) $entry	->encounter
+															->participant
+															->participantRole
+															->addr
+															->state;
+			$this->enc[$n]->location->zip		= (string) $entry	->encounter
+															->participant
+															->participantRole
+															->addr
+															->postalCode;
+			$this->enc[$n]->location->country		= (string) $entry	->encounter
+															->participant
+															->participantRole
+															->addr
+															->country;
+		}
+		return true;
+	}
+	
 }
 
 ?>
