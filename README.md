@@ -13,4 +13,6 @@ To use, load the file into your PHP code, and pass an XML string or XML object t
 * vital: vital signs
 * allergy: allergies
 * enc: encounters
+* plan: care plan (typically unstructured)
 
+For whatever reason, xpath isn't working as expected locally.  Rather than try to fix it, I implemented this without it.  So, expect updates to include the use of xpath, and thus improve error handling.
